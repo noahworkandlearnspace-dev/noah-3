@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>NOAH SANCTUARY — Official</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* BOOT SCREEN */
+  #boot-screen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  #boot-screen.hide {
+    animation: bootOut 0.15s steps(2) forwards;
+  }
+  @keyframes bootOut {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; clip-path: inset(0 0 50% 0); }
+    100% { opacity: 0; clip-path: inset(0 0 100% 0); display: none; }
+  }
+  .boot-text {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #c0c0c0;
+    line-height: 2;
+    text-align: center;
+    animation: flicker 0.08s infinite;
+  }
+  @keyframes flicker {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.85; }
+  }
+  .boot-bar-wrap {
+    width: 220px;
+    height: 14px;
+    background: #000;
+    border: 2px solid #c0c0c0;
+    overflow: hidden;
+  }
+  .boot-bar {
+    height: 100%;
+    background: #c0c0c0;
+    width: 0%;
+    animation: bootLoad 1.2s steps(20) forwards;
+  }
+  @keyframes bootLoad {
+    to { width: 100%; }
+  }
+  .boot-logo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: #fff;
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px #0000ff, 0 0 30px #0000ff;
+    animation: logoPulse 0.6s ease-in-out infinite alternate;
+  }
+  @keyframes logoPulse {
+    from { text-shadow: 0 0 8px #0000ff, 0 0 20px #0000ff; }
+    to { text-shadow: 0 0 20px #4444ff, 0 0 40px #0000ff, 0 0 60px #000080; }
+  }
+
+  /* PAGE CONTENT - starts hidden, glitches in */
+  #main-content {
+    animation: glitchIn 0.4s steps(3) 1.6s both;
+  }
+  @keyframes glitchIn {
+    0% { opacity: 0; transform: translateX(-4px) skewX(-2deg); clip-path: inset(30% 0 40% 0); }
+    33% { opacity: 0.7; transform: translateX(4px) skewX(1deg); clip-path: inset(0 0 60% 0); }
+    66% { opacity: 0.9; transform: translateX(-2px); clip-path: inset(0 0 10% 0); }
+    100% { opacity: 1; transform: none; clip-path: none; }
+  }
+
+  /* ICON hover glitch */
+  .icon-item {
+    transition: filter 0.05s;
+  }
+  .icon-item:hover {
+    filter: brightness(1.1) contrast(1.1);
+    animation: iconGlitch 0.3s steps(2) infinite;
+  }
+  @keyframes iconGlitch {
+    0% { transform: translate(0,0); }
+    25% { transform: translate(-1px, 1px); }
+    50% { transform: translate(1px, -1px); }
+    75% { transform: translate(-1px, 0); }
+    100% { transform: translate(0,0); }
+  }
+
+  :root {
+    --win-gray: #c0c0c0;
+    --win-dark: #808080;
+    --win-darker: #404040;
+    --win-light: #ffffff;
+    --win-blue-title: #000080;
+    --bg-blue: #6600cc;
+    --win-border-light: #dfdfdf;
+    --win-border-dark: #555;
+  }
+
+  body {
+    background: #000;
+    font-family: 'Times New Roman', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  #doom-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  #main-content, .desktop {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 998;
+    pointer-events: none;
+    opacity: 0.08;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 128px 128px;
+    animation: grainMove 0.15s steps(1) infinite;
+  }
+  @keyframes grainMove {
+    0%   { background-position: 0 0; }
+    20%  { background-position: -30px 10px; }
+    40%  { background-position: 20px -15px; }
+    60%  { background-position: -10px 25px; }
+    80%  { background-position: 15px -5px; }
+    100% { background-position: 0 0; }
+  }
+
+  /* STAR BACKGROUND */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(1px 1px at 10% 15%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, #fff 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 40% 8%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 60%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 25%, #fff 0%, transparent 100%),
+      radial-gradient(2px 2px at 80% 70%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 35%, #fff 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 15% 80%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 90%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 85%, #fff 0%, transparent 100%),
+      radial-gradient(2px 2px at 5% 50%, #aaf 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 55%, #faf 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 75% 45%, #aff 0%, transparent 100%),
+      var(--bg-blue);
+  }
+
+  /* TASKBAR */
+  .taskbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--win-gray);
+    border-bottom: 2px solid var(--win-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 6px;
+    height: 32px;
+    box-shadow: 0 2px 0 var(--win-border-dark);
+  }
+
+  .taskbar-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .start-btn {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-light);
+    border-left: 2px solid var(--win-light);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    padding: 2px 8px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #000;
+    user-select: none;
+  }
+  .start-btn:active {
+    border-top: 2px solid var(--win-dark);
+    border-left: 2px solid var(--win-dark);
+    border-right: 2px solid var(--win-light);
+    border-bottom: 2px solid var(--win-light);
+  }
+  .start-btn .win-logo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    width: 14px;
+    height: 14px;
+  }
+  .win-logo span {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .win-logo span:nth-child(1) { background: #f00; }
+  .win-logo span:nth-child(2) { background: #0f0; }
+  .win-logo span:nth-child(3) { background: #00f; }
+  .win-logo span:nth-child(4) { background: #ff0; }
+
+  .taskbar-task {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-dark);
+    border-left: 2px solid var(--win-dark);
+    border-right: 2px solid var(--win-light);
+    border-bottom: 2px solid var(--win-light);
+    padding: 1px 8px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 6px;
+    color: #000;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 110px;
+  }
+
+  .taskbar-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .system-tray {
+    border-top: 2px solid var(--win-dark);
+    border-left: 2px solid var(--win-dark);
+    border-right: 2px solid var(--win-light);
+    border-bottom: 2px solid var(--win-light);
+    padding: 2px 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  #clock {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    color: #000;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  /* MAIN CONTENT */
+  .desktop {
+    padding: 12px 10px 20px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* TITLE WINDOW */
+  .title-window {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-light);
+    border-left: 2px solid var(--win-light);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    margin-bottom: 14px;
+    box-shadow: 2px 2px 0 #000;
+  }
+
+  .window-titlebar {
+    background: linear-gradient(90deg, var(--win-blue-title), #1084d0);
+    padding: 3px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .window-title-text {
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  .window-controls {
+    display: flex;
+    gap: 2px;
+  }
+  .win-ctrl {
+    width: 14px;
+    height: 12px;
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-light);
+    border-left: 2px solid var(--win-light);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    font-size: 7px;
+    line-height: 1;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #000;
+    font-family: Arial, sans-serif;
+  }
+
+  .window-content {
+    padding: 14px 10px 10px;
+    text-align: center;
+  }
+
+  .marquee-title {
+    display: inline-block;
+    white-space: nowrap;
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(10px, 3.5vw, 16px);
+    color: #000;
+    text-shadow: 2px 2px 0 #808080;
+    animation: marqueeScroll 20s linear infinite;
+    letter-spacing: 2px;
+  }
+  @keyframes marqueeScroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(14px, 5vw, 22px);
+    color: #000;
+    line-height: 1.6;
+    letter-spacing: 2px;
+    text-shadow: 3px 3px 0 #808080;
+    margin-bottom: 4px;
+  }
+  .sub-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    color: var(--win-blue-title);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+
+  /* ICON GRID */
+  .icon-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .icon-item {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-light);
+    border-left: 2px solid var(--win-light);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    box-shadow: 2px 2px 0 #000;
+    padding: 12px 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: none;
+    user-select: none;
+    position: relative;
+  }
+
+  .icon-item:active {
+    border-top: 2px solid var(--win-dark);
+    border-left: 2px solid var(--win-dark);
+    border-right: 2px solid var(--win-light);
+    border-bottom: 2px solid var(--win-light);
+    box-shadow: none;
+  }
+
+  .icon-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: transparent;
+  }
+
+  .icon-item:hover::after {
+    background: rgba(0,0,128,0.08);
+  }
+
+  .pixel-icon {
+    width: 52px;
+    height: 52px;
+    image-rendering: pixelated;
+  }
+
+  .icon-label {
+    font-family: 'Times New Roman', serif;
+    font-size: 13px;
+    color: #000;
+    text-align: center;
+    line-height: 1.3;
+    font-weight: bold;
+    text-shadow: none;
+  }
+
+  /* SVG PIXEL ICONS */
+  .pixel-icon svg {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    shape-rendering: crispEdges;
+  }
+
+  /* WINAMP PLAYER */
+  .winamp {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-light);
+    border-left: 2px solid var(--win-light);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    box-shadow: 2px 2px 0 #000;
+    margin-bottom: 14px;
+  }
+
+  .winamp-titlebar {
+    background: linear-gradient(90deg, #000080, #1084d0);
+    padding: 3px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .winamp-title-text {
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+  }
+
+  .winamp-display {
+    background: #000;
+    margin: 6px;
+    padding: 6px 8px;
+    border: 2px inset #555;
+    min-height: 36px;
+  }
+  .winamp-track-info {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 6px;
+    color: #00ff41;
+    line-height: 1.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .winamp-eq {
+    display: flex;
+    gap: 2px;
+    margin-top: 4px;
+    align-items: flex-end;
+    height: 14px;
+  }
+  .eq-bar {
+    width: 4px;
+    background: #00ff41;
+    animation: eqAnim 0.4s infinite alternate ease-in-out;
+  }
+  .eq-bar:nth-child(1) { height: 4px; animation-delay: 0s; }
+  .eq-bar:nth-child(2) { height: 10px; animation-delay: 0.1s; }
+  .eq-bar:nth-child(3) { height: 7px; animation-delay: 0.05s; }
+  .eq-bar:nth-child(4) { height: 12px; animation-delay: 0.15s; }
+  .eq-bar:nth-child(5) { height: 5px; animation-delay: 0.2s; }
+  .eq-bar:nth-child(6) { height: 9px; animation-delay: 0.08s; }
+  .eq-bar:nth-child(7) { height: 14px; animation-delay: 0.12s; }
+  .eq-bar:nth-child(8) { height: 6px; animation-delay: 0.18s; }
+
+  @keyframes eqAnim {
+    from { transform: scaleY(0.3); }
+    to { transform: scaleY(1); }
+  }
+
+  .winamp-playlist {
+    margin: 0 6px 6px;
+    background: #fff;
+    border: 2px inset #555;
+    padding: 4px 6px;
+  }
+  .playlist-item {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 6px;
+    color: #000080;
+    padding: 3px 2px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    line-height: 1.5;
+    transition: background 0.1s;
+  }
+  .playlist-item:last-child { border-bottom: none; }
+  .playlist-item.active { background: #000080; color: #fff; }
+  .playlist-item:hover:not(.active) { background: #c8d8ff; }
+
+  .winamp-controls {
+    display: flex;
+    gap: 4px;
+    padding: 0 6px 8px;
+    justify-content: center;
+  }
+  .ctrl-btn {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-light);
+    border-left: 2px solid var(--win-light);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    padding: 4px 8px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 6px;
+    cursor: pointer;
+    color: #000;
+    user-select: none;
+    min-width: 40px;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .ctrl-btn:active {
+    border-top: 2px solid var(--win-dark);
+    border-left: 2px solid var(--win-dark);
+    border-right: 2px solid var(--win-light);
+    border-bottom: 2px solid var(--win-light);
+  }
+
+  .winamp-volume {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 8px 8px;
+  }
+  .vol-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 5px;
+    color: #000;
+  }
+  .vol-track {
+    flex: 1;
+    height: 6px;
+    background: #000;
+    border: 1px inset #555;
+    position: relative;
+  }
+  .vol-fill {
+    height: 100%;
+    background: #00ff41;
+    width: 70%;
+  }
+
+  /* FOOTER */
+  .footer-window {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-light);
+    border-left: 2px solid var(--win-light);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    box-shadow: 2px 2px 0 #000;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .footer-text {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 5px;
+    color: #000;
+    line-height: 2.2;
+    letter-spacing: 0.5px;
+  }
+
+  .footer-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .label-logo {
+    font-family: 'Times New Roman', serif;
+    font-size: 11px;
+    font-weight: bold;
+    color: #000080;
+    border: 2px solid #000080;
+    padding: 2px 6px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* DESKTOP ICONS (top floating) */
+  .desktop-icon {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .desktop-icon-img {
+    width: 32px;
+    height: 32px;
+  }
+  .desktop-icon-label {
+    font-family: 'Times New Roman', serif;
+    font-size: 10px;
+    color: white;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000;
+    text-align: center;
+    background: rgba(0,0,128,0.5);
+    padding: 0 2px;
+  }
+
+  /* Scanline overlay */
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    z-index: 1000;
+  }
+
+  /* POPUP DIALOG */
+  .dialog-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+  }
+  .dialog-overlay.show { display: flex; }
+  .dialog-box {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-light);
+    border-left: 2px solid var(--win-light);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    box-shadow: 4px 4px 0 #000;
+    width: 260px;
+  }
+  .dialog-titlebar {
+    background: linear-gradient(90deg, #000080, #1084d0);
+    padding: 3px 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .dialog-title { color: #fff; font-family: 'Press Start 2P', monospace; font-size: 7px; }
+  .dialog-body { padding: 14px 12px 10px; font-family: 'Press Start 2P', monospace; font-size: 7px; color: #000; line-height: 1.8; }
+  .dialog-footer { padding: 6px 12px 10px; display: flex; justify-content: center; }
+  .dialog-ok {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-light);
+    border-left: 2px solid var(--win-light);
+    border-right: 2px solid var(--win-dark);
+    border-bottom: 2px solid var(--win-dark);
+    padding: 4px 18px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    cursor: pointer;
+    color: #000;
+  }
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+
+<!-- STAR BACKGROUND CANVAS -->
+<canvas id="starfield" style="position:fixed;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none;"></canvas>
+
+<canvas id="doom-bg"></canvas>
+
+<!-- BOOT SCREEN -->
+<div id="boot-screen" style="position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:pointer;" onclick="startBoot()">
+  
+  <!-- Microsoft Logo -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;width:64px;height:64px;">
+      <div style="background:#f25022;border-radius:2px;"></div>
+      <div style="background:#7fba00;border-radius:2px;"></div>
+      <div style="background:#00a4ef;border-radius:2px;"></div>
+      <div style="background:#ffb900;border-radius:2px;"></div>
+    </div>
+    <div style="font-family:Arial,sans-serif;font-size:22px;color:#fff;font-weight:300;letter-spacing:2px;">Microsoft</div>
+  </div>
+
+  <div id="boot-prompt" style="font-family:'Press Start 2P',monospace;font-size:8px;color:#808080;text-align:center;line-height:2;animation:blinkAnim 1s steps(1) infinite;">
+    click to start
+  </div>
+
+  <!-- hidden loading state -->
+  <div id="boot-loading" style="display:none;flex-direction:column;align-items:center;gap:12px;">
+    <div class="boot-text">Loading system files...<br>Initializing audio.exe...<br>Starting Windows 95...</div>
+    <div class="boot-bar-wrap">
+      <div class="boot-bar" id="boot-bar"></div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+@keyframes spin360 {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+.spin-anim {
+  animation: spin360 0.8s cubic-bezier(0.4,0,0.2,1) 1;
+}
+</style>
+
+<div id="main-content">
+<!-- TASKBAR -->
+<div class="taskbar">
+  <div class="taskbar-left">
+    <button class="start-btn">
+      <div class="win-logo">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      Start
+    </button>
+    <div class="taskbar-task">⊞ NOAH SANCTUARY — Official</div>
+  </div>
+  <div class="taskbar-right">
+    <div class="system-tray">
+      <span id="day-icon">🌙</span>
+      <span id="clock">00:00</span>
+    </div>
+  </div>
+</div>
+
+<!-- DESKTOP -->
+<div class="desktop">
+
+  <!-- TITLE WINDOW -->
+  <div class="title-window">
+    <div class="window-titlebar">
+      <span class="window-title-text">🎵 NOAH SANCTUARY.exe</span>
+      <div class="window-controls">
+        <div class="win-ctrl">_</div>
+        <div class="win-ctrl">□</div>
+        <div class="win-ctrl" onclick="showDialog('Sorry!','This band cannot be closed.')">✕</div>
+      </div>
+    </div>
+    <div class="window-content">
+      <div style="overflow:hidden;width:100%;margin-bottom:4px;">
+        <div class="marquee-title">
+          ★ NOAH SANCTUARY ★ NOAH SANCTUARY ★ NOAH SANCTUARY ★ NOAH SANCTUARY ★&nbsp;
+        </div>
+      </div>
+      <div class="sub-title">— OFFICIAL —</div>
+      <div style="font-family:'Press Start 2P',monospace;font-size:6px;color:#808080;margin-top:4px;">
+        EST. 1998 · Ver. 6.0
+      </div>
+
+      <!-- PHOTOS ROW - semua foto ke samping -->
+      <div style="margin:12px auto 4px;display:flex;flex-direction:row;align-items:flex-start;justify-content:center;gap:8px;flex-wrap:nowrap;overflow-x:auto;">
+
+        <!-- PHOTO 1 -->
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="border-top:3px solid #555;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px;background:#808080;">
+            <div style="border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;padding:2px;background:#c0c0c0;">
+              <img src="https://files.catbox.moe/igo89d.jpg" style="display:block;width:90px;height:90px;object-fit:cover;cursor:zoom-in;" onclick="openLightbox(this.src)"/>
+            </div>
+          </div>
+          <div style="font-family:'Times New Roman',serif;font-size:10px;color:#000;background:#c0c0c0;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px 4px;width:100%;text-align:center;font-weight:bold;">this person is<br>literally me 😭</div>
+        </div>
+
+        <!-- PHOTO 2 -->
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="border-top:3px solid #555;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px;background:#808080;">
+            <div style="border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;padding:2px;background:#c0c0c0;">
+              <img src="https://files.catbox.moe/drtydz.jpeg" style="display:block;width:90px;height:90px;object-fit:cover;cursor:zoom-in;" onclick="openLightbox(this.src)"/>
+            </div>
+          </div>
+          <div style="font-family:'Times New Roman',serif;font-size:10px;color:#000;background:#c0c0c0;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px 4px;width:100%;text-align:center;font-weight:bold;">i love her 🥹</div>
+        </div>
+
+        <!-- PHOTO 3 -->
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="border-top:3px solid #555;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px;background:#808080;">
+            <div style="border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;padding:2px;background:#c0c0c0;">
+              <img src="https://files.catbox.moe/a1u84s.jpeg" style="display:block;width:90px;height:90px;object-fit:cover;cursor:zoom-in;" onclick="openLightbox(this.src)"/>
+            </div>
+          </div>
+          <div style="font-family:'Times New Roman',serif;font-size:10px;color:#000;background:#c0c0c0;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px 4px;width:100%;text-align:center;font-weight:bold;">me at the<br>convention 🎪</div>
+        </div>
+
+      </div>
+  </div>
+</div>
+
+  <!-- 3D BOX WINDOW -->
+  <div class="title-window" style="margin-bottom:14px;">
+    <div class="window-titlebar">
+      <span class="window-title-text">🌀 3D_BOX.exe</span>
+      <div class="window-controls">
+        <div class="win-ctrl">_</div>
+        <div class="win-ctrl">□</div>
+        <div class="win-ctrl">✕</div>
+      </div>
+    </div>
+    <div style="background:#000;padding:0;line-height:0;position:relative;">
+      <canvas id="box3d" style="display:block;width:100%;height:200px;cursor:grab;touch-action:none;"></canvas>
+    </div>
+    <!-- SIZE SLIDER -->
+    <div style="background:#c0c0c0;padding:6px 10px;display:flex;align-items:center;gap:8px;">
+      <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:#000;">SIZE</span>
+      <input type="range" id="box-size" min="20" max="120" value="60" style="flex:1;height:6px;accent-color:#000080;">
+      <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:#000;">DRAG TO SPIN</span>
+    </div>
+  </div>
+
+  <div class="icon-grid">
+
+
+
+
+
+
+
+    <!-- LINKEDIN -->
+    <a class="icon-item" href="https://www.linkedin.com/in/noah-noah-2951203b5?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">
+      <div class="pixel-icon">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="28" height="28" rx="4" fill="#0077B5"/>
+          <rect x="6" y="12" width="4" height="14" fill="#fff"/>
+          <circle cx="8" cy="8" r="2.5" fill="#fff"/>
+          <path d="M14,12 h4 v2 c1-2,3-2.5,5-2.5c4,0,5,2.5,5,6v8h-4v-7c0-2-0.5-3.5-2.5-3.5c-2,0-3,1.5-3,3.5v7h-4z" fill="#fff"/>
+        </svg>
+      </div>
+      <span class="icon-label">LinkedIn</span>
+    </a>
+
+    <!-- INSTAGRAM -->
+    <a class="icon-item" href="https://www.instagram.com/accounts/login/?next=%2Fnoah.withcooljacket&source=omni_redirect" target="_blank">
+      <div class="pixel-icon">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <!-- vintage camera body -->
+          <rect x="3" y="9" width="26" height="18" rx="3" fill="#c8a87a" stroke="#6b4c2a" stroke-width="1.5"/>
+          <!-- viewfinder bump -->
+          <rect x="8" y="5" width="8" height="5" rx="1" fill="#b8986a" stroke="#6b4c2a" stroke-width="1.5"/>
+          <!-- lens outer -->
+          <circle cx="16" cy="18" r="7" fill="#444"/>
+          <circle cx="16" cy="18" r="5.5" fill="#222"/>
+          <circle cx="16" cy="18" r="4" fill="#111"/>
+          <!-- lens shine -->
+          <circle cx="14" cy="16" r="1.5" fill="rgba(255,255,255,0.4)"/>
+          <!-- flash -->
+          <rect x="22" y="10" width="4" height="3" rx="0.5" fill="#fffde7" stroke="#aaa" stroke-width="0.5"/>
+          <!-- shutter btn -->
+          <circle cx="8" cy="9" r="2" fill="#888" stroke="#555" stroke-width="1"/>
+        </svg>
+      </div>
+      <span class="icon-label">Instagram</span>
+    </a>
+
+    <!-- YOUTUBE MUSIC -->
+    <a class="icon-item" href="https://music.youtube.com/channel/UCgg75THdzSffiJfwHKizEKA" target="_blank">
+      <div class="pixel-icon">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <!-- circle bg -->
+          <circle cx="16" cy="16" r="14" fill="#FF0000"/>
+          <!-- music note -->
+          <rect x="13" y="10" width="3" height="10" rx="1" fill="white"/>
+          <rect x="13" y="10" width="7" height="3" rx="1" fill="white"/>
+          <circle cx="13" cy="20" r="2.5" fill="white"/>
+          <!-- small note -->
+          <rect x="19" y="13" width="2.5" height="7" rx="1" fill="white"/>
+          <circle cx="19" cy="20" r="2" fill="white"/>
+        </svg>
+      </div>
+      <span class="icon-label">YouTube Music</span>
+    </a>
+
+    <!-- LETTERBOXD -->
+    <a class="icon-item" href="https://letterboxd.com/suprabapak46/" target="_blank">
+      <div class="pixel-icon">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <!-- clapperboard -->
+          <rect x="3" y="12" width="26" height="17" rx="1" fill="#222" stroke="#000" stroke-width="1"/>
+          <!-- clapperboard top -->
+          <rect x="3" y="6" width="26" height="7" rx="1" fill="#f5c518" stroke="#000" stroke-width="1"/>
+          <!-- clapper stripes -->
+          <rect x="5" y="6" width="4" height="7" fill="#000"/>
+          <rect x="12" y="6" width="4" height="7" fill="#000"/>
+          <rect x="19" y="6" width="4" height="7" fill="#000"/>
+          <!-- film holes -->
+          <rect x="3" y="13" width="3" height="3" rx="0.5" fill="#555"/>
+          <rect x="3" y="18" width="3" height="3" rx="0.5" fill="#555"/>
+          <rect x="3" y="23" width="3" height="3" rx="0.5" fill="#555"/>
+          <rect x="26" y="13" width="3" height="3" rx="0.5" fill="#555"/>
+          <rect x="26" y="18" width="3" height="3" rx="0.5" fill="#555"/>
+          <rect x="26" y="23" width="3" height="3" rx="0.5" fill="#555"/>
+          <!-- screen area -->
+          <rect x="7" y="14" width="18" height="13" fill="#1a1a2e"/>
+          <!-- play icon -->
+          <polygon points="12,17 12,24 21,20.5" fill="#f5c518"/>
+        </svg>
+      </div>
+      <span class="icon-label">Letterboxd</span>
+    </a>
+
+
+
+
+
+  </div>
+
+  <!-- WINAMP PLAYER -->
+  <div class="winamp">
+    <div class="winamp-titlebar">
+      <span class="winamp-title-text">▶ WINAMP — NOAH SANCTUARY</span>
+      <div class="window-controls">
+        <div class="win-ctrl">_</div>
+        <div class="win-ctrl">□</div>
+        <div class="win-ctrl">✕</div>
+      </div>
+    </div>
+
+    <div class="winamp-display">
+      <div class="winamp-track-info" id="track-display">▶ 1. Watching TV Makes U Smarter</div>
+      <div class="winamp-eq" id="eq-bars">
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+      </div>
+    </div>
+
+    <div class="winamp-playlist">
+      <div class="playlist-item active" data-track="1. Watching TV Makes U Smarter" onclick="selectTrack(this)">1. Watching TV Makes U Smarter</div>
+      <div class="playlist-item" data-track="2. When You Sleep" onclick="selectTrack(this)">2. When You Sleep</div>
+      <div class="playlist-item" data-track="3. I Have No Mouth and I Must Scream" onclick="selectTrack(this)">3. I Have No Mouth and I Must Scream</div>
+
+      <audio id="audio-player" src="https://files.catbox.moe/hios2r.mp3" preload="auto"></audio>
+    </div>
+
+    <div class="winamp-controls">
+      <button class="ctrl-btn" onclick="prevTrack()">⏮ PREV</button>
+      <button class="ctrl-btn" id="play-btn" onclick="togglePlay()">▶ PLAY</button>
+      <button class="ctrl-btn" onclick="nextTrack()">NEXT ⏭</button>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div style="padding: 0 6px 6px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+        <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:#000;" id="time-current">0:00</span>
+        <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:#000;" id="time-total">0:00</span>
+      </div>
+      <div id="progress-track" onclick="seekAudio(event)" style="height:8px;background:#000;border:2px inset #555;cursor:pointer;position:relative;">
+        <div id="progress-fill" style="height:100%;background:#00ff41;width:0%;transition:width 0.3s;"></div>
+        <div id="progress-thumb" style="position:absolute;top:-2px;left:0%;width:6px;height:10px;background:#c0c0c0;border-top:2px solid #fff;border-left:2px solid #fff;border-right:2px solid #555;border-bottom:2px solid #555;"></div>
+      </div>
+    </div>
+
+    <div class="winamp-volume">
+      <span class="vol-label">VOL</span>
+      <div class="vol-track"><div class="vol-fill" id="vol-fill"></div></div>
+      <span class="vol-label">70%</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-window">
+    <div class="footer-text">
+      © 2025 NOAH SANCTUARY<br>
+      ————————————<br>
+      MADE BY CLAUDE AI<br>
+      AND DESIGNED BY NOAH
+    </div>
+
+    <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#808080;margin-top:8px;">
+      noahsanctuary.com v1.0 · IE 6.0 Recommended
+    </div>
+  </div>
+
+</div><!-- end desktop -->
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:center;justify-content:center;cursor:zoom-out;">
+  <div style="position:relative;max-width:90vw;max-height:90vh;">
+    <div style="background:var(--win-gray);border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;padding:4px;">
+      <div style="background:linear-gradient(90deg,#000080,#1084d0);padding:3px 6px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-family:'Press Start 2P',monospace;font-size:7px;color:#fff;">🖼 image_viewer.exe</span>
+        <span onclick="closeLightbox()" style="font-family:'Press Start 2P',monospace;font-size:7px;color:#fff;cursor:pointer;background:var(--win-gray);color:#000;border-top:2px solid #fff;border-left:2px solid #fff;border-right:2px solid #555;border-bottom:2px solid #555;padding:1px 5px;">✕</span>
+      </div>
+      <img id="lightbox-img" src="" style="display:block;max-width:85vw;max-height:80vh;object-fit:contain;border-radius:4px;"/>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main-content -->
+
+<script>
+// BOOT SCREEN
+function startBoot() {
+  document.getElementById('boot-prompt').style.display = 'none';
+  document.getElementById('boot-loading').style.display = 'flex';
+  document.getElementById('boot-screen').onclick = null;
+  document.getElementById('boot-screen').style.cursor = 'default';
+
+  // animate bar then hide
+  const bar = document.getElementById('boot-bar');
+  bar.style.animation = 'bootLoad 1.4s steps(20) forwards';
+
+  setTimeout(() => {
+    const boot = document.getElementById('boot-screen');
+    boot.style.animation = 'bootOut 0.15s steps(2) forwards';
+    setTimeout(() => boot.style.display = 'none', 200);
+  }, 1600);
+}
+</script>
+
+<script>
+function openLightbox(src) {
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lightbox-img');
+  img.src = src;
+  lb.style.display = 'flex';
+  // spin on open
+  img.classList.remove('spin-anim');
+  void img.offsetWidth; // reflow
+  img.classList.add('spin-anim');
+  // spin again on click
+  img.onclick = function(e) {
+    e.stopPropagation();
+    img.classList.remove('spin-anim');
+    void img.offsetWidth;
+    img.classList.add('spin-anim');
+  };
+}
+function closeLightbox() {
+  document.getElementById('lightbox').style.display = 'none';
+}
+</script>
+<div class="dialog-overlay" id="dialog-overlay" onclick="closeDialog()">
+  <div class="dialog-box" onclick="event.stopPropagation()">
+    <div class="dialog-titlebar">
+      <span class="dialog-title" id="dialog-title">Notice</span>
+      <div class="win-ctrl" onclick="closeDialog()">✕</div>
+    </div>
+    <div class="dialog-body" id="dialog-body">Message</div>
+    <div class="dialog-footer">
+      <button class="dialog-ok" onclick="closeDialog()">OK</button>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+// DOOM BACKGROUND
+(function() {
+  const canvas = document.getElementById('doom-bg');
+  const ctx = canvas.getContext('2d');
+
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Simple maze map
+  const map = [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,1,1,0,1,1,1,0,1,1,0,1,1,0,1],
+    [1,0,1,0,0,0,0,1,0,0,0,0,0,1,0,1],
+    [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
+    [1,0,1,0,0,0,1,1,1,0,0,0,1,0,0,1],
+    [1,0,1,1,0,1,0,0,0,1,0,1,1,1,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,1,0,1,1,0,1,1,0,1,1,0,1,0,1],
+    [1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+    [1,0,1,1,1,0,0,0,0,0,1,1,1,0,0,1],
+    [1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  ];
+
+  const MW = map[0].length;
+  const MH = map.length;
+
+  let px = 2, py = 2, pa = 0;
+
+  // Wall colors DOOM style
+  const wallColors = ['#8b0000','#a00000','#cc0000','#8b0000','#6b0000'];
+
+  function drawDoom() {
+    const W = canvas.width;
+    const H = canvas.height;
+    const halfH = H / 2;
+    const FOV = Math.PI / 3;
+    const RAYS = Math.floor(W / 2);
+
+    // Ceiling - dark gray/black
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, W, halfH);
+
+    // Floor - dark red/brown
+    const floorGrad = ctx.createLinearGradient(0, halfH, 0, H);
+    floorGrad.addColorStop(0, '#1a0000');
+    floorGrad.addColorStop(1, '#330000');
+    ctx.fillStyle = floorGrad;
+    ctx.fillRect(0, halfH, W, halfH);
+
+    // Raycasting
+    for (let r = 0; r < RAYS; r++) {
+      const rayAngle = pa - FOV/2 + (FOV * r / RAYS);
+      const cosA = Math.cos(rayAngle);
+      const sinA = Math.sin(rayAngle);
+
+      let dist = 0;
+      let hit = false;
+      let wx, wy;
+
+      for (let d = 0; d < 20; d += 0.05) {
+        wx = px + cosA * d;
+        wy = py + sinA * d;
+        const mx = Math.floor(wx);
+        const my = Math.floor(wy);
+        if (mx < 0 || mx >= MW || my < 0 || my >= MH) { hit = true; dist = d; break; }
+        if (map[my] && map[my][mx] === 1) { hit = true; dist = d; break; }
+      }
+
+      if (!hit) dist = 20;
+
+      // Fix fisheye
+      dist *= Math.cos(rayAngle - pa);
+      if (dist < 0.1) dist = 0.1;
+
+      const wallH = Math.min(H, (H / dist) * 1.2);
+      const top = halfH - wallH / 2;
+
+      // Color based on distance
+      const brightness = Math.max(0, Math.min(255, 255 - dist * 20));
+      const r_c = Math.floor(brightness * 0.6);
+      const g_c = 0;
+      const b_c = 0;
+
+      ctx.fillStyle = `rgb(${r_c},${g_c},${b_c})`;
+      ctx.fillRect(r * 2, top, 2, wallH);
+    }
+
+    // HUD - DOOM style health bar at bottom
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(0, H - 36, W, 36);
+    ctx.fillStyle = '#cc0000';
+    ctx.font = "bold 14px 'Press Start 2P', monospace";
+    ctx.fillText('💀 100%', 10, H - 14);
+    ctx.fillStyle = '#888';
+    ctx.font = "8px 'Press Start 2P', monospace";
+    ctx.fillText('SHOTGUN  AMMO: 50', W/2 - 70, H - 14);
+  }
+
+  // Auto-walk through maze
+  let moveT = 0;
+  function update() {
+    moveT += 0.01;
+    pa += 0.008; // slow rotate
+
+    // Move forward
+    const speed = 0.02;
+    const nx = px + Math.cos(pa) * speed;
+    const ny = py + Math.sin(pa) * speed;
+
+    const mx = Math.floor(nx);
+    const my = Math.floor(ny);
+
+    if (map[Math.floor(py)][mx] === 0) px = nx;
+    if (map[my][Math.floor(px)] === 0) py = ny;
+
+    // Bounce off walls
+    if (map[Math.floor(py)][Math.floor(px + Math.cos(pa)*0.3)] === 1 ||
+        map[Math.floor(py + Math.sin(pa)*0.3)][Math.floor(px)] === 1) {
+      pa += Math.PI * 0.7;
+    }
+
+    drawDoom();
+    requestAnimationFrame(update);
+  }
+
+  update();
+})();
+
+
+// 3D BOX
+(function(){
+  const canvas = document.getElementById('box3d');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = 200;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let rotX = 0.4, rotY = 0.4;
+  let velX = 0.005, velY = 0.012;
+  let isDragging = false;
+  let lastX = 0, lastY = 0;
+  let boxSize = 60;
+
+  document.getElementById('box-size').addEventListener('input', function(){ boxSize = +this.value; });
+
+  // drag to spin
+  canvas.addEventListener('mousedown', e=>{ isDragging=true; lastX=e.clientX; lastY=e.clientY; canvas.style.cursor='grabbing'; e.preventDefault(); });
+  window.addEventListener('mouseup', ()=>{ isDragging=false; canvas.style.cursor='grab'; });
+  window.addEventListener('mousemove', e=>{
+    if(!isDragging) return;
+    velY = (e.clientX-lastX)*0.01;
+    velX = (e.clientY-lastY)*0.01;
+    rotY += velY; rotX += velX;
+    lastX=e.clientX; lastY=e.clientY;
+  });
+  canvas.addEventListener('touchstart', e=>{
+    isDragging=true;
+    lastX=e.touches[0].clientX;
+    lastY=e.touches[0].clientY;
+    e.preventDefault();
+    e.stopPropagation();
+  },{passive:false});
+
+  canvas.addEventListener('touchend', e=>{
+    isDragging=false;
+    e.preventDefault();
+  },{passive:false});
+
+  canvas.addEventListener('touchcancel', ()=>{ isDragging=false; });
+
+  canvas.addEventListener('touchmove', e=>{
+    if(!isDragging) return;
+    const dx = e.touches[0].clientX - lastX;
+    const dy = e.touches[0].clientY - lastY;
+    velY = dx * 0.015;
+    velX = dy * 0.015;
+    rotY += velY;
+    rotX += velX;
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+    e.preventDefault();
+    e.stopPropagation();
+  },{passive:false});
+
+  function rotateX(p,a){ return {x:p.x, y:p.y*Math.cos(a)-p.z*Math.sin(a), z:p.y*Math.sin(a)+p.z*Math.cos(a)}; }
+  function rotateY(p,a){ return {x:p.x*Math.cos(a)+p.z*Math.sin(a), y:p.y, z:-p.x*Math.sin(a)+p.z*Math.cos(a)}; }
+
+  const FACE_COLORS = ['#ff0088','#00ccff','#ffff00','#00ff88','#ff6600','#aa44ff'];
+
+  function draw(){
+    const W = canvas.width, H = canvas.height;
+    ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
+
+    // stars
+    for(let i=0;i<40;i++){
+      ctx.fillStyle=`rgba(255,255,255,${0.3+((i*37)%10)/20})`;
+      ctx.fillRect((i*73+11)%W,(i*41+7)%(H-10),2,2);
+    }
+
+    // auto rotate when not dragging
+    if(!isDragging){
+      velX *= 0.97; velY *= 0.97;
+      velX += (0.005 - velX)*0.02;
+      velY += (0.012 - velY)*0.02;
+      rotX += velX; rotY += velY;
+    }
+
+    const s = boxSize;
+    const verts = [
+      {x:-1,y:-1,z:-1},{x:1,y:-1,z:-1},{x:1,y:1,z:-1},{x:-1,y:1,z:-1},
+      {x:-1,y:-1,z:1},{x:1,y:-1,z:1},{x:1,y:1,z:1},{x:-1,y:1,z:1}
+    ].map(v=>({x:v.x*s,y:v.y*s,z:v.z*s}));
+
+    const faces = [
+      {i:[0,1,2,3],ci:0},{i:[4,5,6,7],ci:1},
+      {i:[0,1,5,4],ci:2},{i:[2,3,7,6],ci:3},
+      {i:[0,3,7,4],ci:4},{i:[1,2,6,5],ci:5}
+    ];
+
+    const rv = verts.map(v=>{ let p=rotateX(v,rotX); return rotateY(p,rotY); });
+
+    const fov = 320;
+    function proj(p){ const sc=fov/(fov+p.z+200); return {x:W/2+p.x*sc, y:H/2+p.y*sc, sc}; }
+
+    // sort by depth
+    const sorted = faces.map(f=>{
+      const depth = f.i.reduce((s,i)=>s+rv[i].z,0)/4;
+      return {...f,depth};
+    }).sort((a,b)=>a.depth-b.depth);
+
+    sorted.forEach(f=>{
+      const pts = f.i.map(i=>proj(rv[i]));
+
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x,pts[0].y);
+      pts.forEach(p=>ctx.lineTo(p.x,p.y));
+      ctx.closePath();
+
+      // lighting based on face normal z depth
+      const bright = Math.max(0.45, 1 - (f.depth/s + 1) * 0.25);
+      const hex = Math.floor(bright*255).toString(16).padStart(2,'0');
+      ctx.fillStyle = FACE_COLORS[f.ci] + hex;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours();
+  const hStr = String(h).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent = hStr + ':' + m;
+  // 6:00 - 18:00 = siang (matahari), selainnya malam (bulan)
+  if (h >= 6 && h < 18) {
+    document.getElementById('day-icon').textContent = '☀️';
+  } else {
+    document.getElementById('day-icon').textContent = '🌙';
+  }
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// PLAYER
+let currentTrack = 0;
+let isPlaying = false;
+const tracks = ['1. Watching TV Makes U Smarter','2. When You Sleep','3. I Have No Mouth and I Must Scream'];
+const audioSrc = ['https://files.catbox.moe/5u8uzi.mp3', 'https://files.catbox.moe/mhpxwy.mp3', 'https://files.catbox.moe/hios2r.mp3'];
+const items = document.querySelectorAll('.playlist-item');
+const eqBars = document.getElementById('eq-bars');
+const audio = document.getElementById('audio-player');
+
+audio.addEventListener('ended', () => { isPlaying = false; updateDisplay(); });
+
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration) return;
+  const pct = (audio.currentTime / audio.duration) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-thumb').style.left = 'calc(' + pct + '% - 3px)';
+  document.getElementById('time-current').textContent = formatTime(audio.currentTime);
+  document.getElementById('time-total').textContent = formatTime(audio.duration);
+});
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return m + ':' + String(sec).padStart(2,'0');
+}
+
+function seekAudio(e) {
+  if (!audio.duration) return;
+  const track = document.getElementById('progress-track');
+  const rect = track.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  audio.currentTime = pct * audio.duration;
+}
+
+function updateDisplay() {
+  document.getElementById('track-display').textContent = (isPlaying ? '▶ ' : '⏸ ') + tracks[currentTrack];
+  items.forEach((el, i) => el.classList.toggle('active', i === currentTrack));
+  eqBars.style.display = isPlaying ? 'flex' : 'none';
+  document.getElementById('play-btn').textContent = isPlaying ? '⏸ PAUSE' : '▶ PLAY';
+}
+
+function playAudio() {
+  if (audioSrc[currentTrack]) {
+    audio.src = audioSrc[currentTrack];
+    audio.play();
+  } else {
+    audio.pause();
+  }
+}
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  if (isPlaying) { playAudio(); } else { audio.pause(); }
+  updateDisplay();
+}
+function nextTrack() { currentTrack = (currentTrack + 1) % tracks.length; isPlaying = true; playAudio(); updateDisplay(); }
+function prevTrack() { currentTrack = (currentTrack - 1 + tracks.length) % tracks.length; isPlaying = true; playAudio(); updateDisplay(); }
+function selectTrack(el) {
+  const items = document.querySelectorAll('.playlist-item');
+  items.forEach((item, i) => { if (item === el) { currentTrack = i; } });
+  isPlaying = true; playAudio(); updateDisplay();
+}
+
+// DIALOG
+function showDialog(title, msg) {
+  document.getElementById('dialog-title').textContent = title;
+  document.getElementById('dialog-body').textContent = msg;
+  document.getElementById('dialog-overlay').classList.add('show');
+}
+function closeDialog() { document.getElementById('dialog-overlay').classList.remove('show'); }
+
+
+</script>
+</body>
+</html>
