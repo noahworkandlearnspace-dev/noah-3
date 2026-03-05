@@ -745,6 +745,385 @@
     cursor: pointer;
     color: #000;
   }
+
+  /* ============================================================
+     DESKTOP LAYOUT (768px and above)
+  ============================================================ */
+  @media (min-width: 768px) {
+    .desktop {
+      max-width: 700px;
+      padding: 20px 16px 32px;
+    }
+
+    /* Taskbar improvements */
+    .taskbar {
+      height: 38px;
+      padding: 3px 10px;
+    }
+    .start-btn {
+      font-size: 9px;
+      padding: 3px 12px;
+    }
+    .start-btn .win-logo {
+      width: 18px;
+      height: 18px;
+    }
+    .taskbar-task {
+      font-size: 7px;
+      padding: 2px 12px;
+      max-width: 200px;
+    }
+    #clock {
+      font-size: 9px;
+      min-width: 58px;
+    }
+
+    /* Title window */
+    .window-title-text {
+      font-size: 9px;
+    }
+    .win-ctrl {
+      width: 18px;
+      height: 15px;
+      font-size: 9px;
+    }
+
+    /* Photos row - bigger on desktop */
+    .desktop #noah-window .window-content div[style*="flex-direction:row"] img,
+    .desktop #noah-window .window-content div[style*="flex-direction: row"] img {
+      width: 120px !important;
+      height: 120px !important;
+    }
+
+    /* Icon grid - 4 columns on desktop */
+    .icon-grid {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .pixel-icon {
+      width: 64px;
+      height: 64px;
+    }
+    .icon-label {
+      font-size: 13px;
+    }
+
+    /* 3D box bigger */
+    #box3d {
+      height: 280px !important;
+    }
+
+    /* Winamp */
+    .winamp-track-info {
+      font-size: 7px;
+    }
+    .winamp-eq {
+      height: 18px;
+    }
+    .eq-bar {
+      width: 5px;
+    }
+
+    /* Marquee title bigger */
+    .main-title {
+      font-size: clamp(18px, 3vw, 26px);
+    }
+
+    /* Footer */
+    .footer-text {
+      font-size: 6px;
+    }
+
+    /* Dialog box */
+    .dialog-box {
+      width: 340px;
+    }
+    .dialog-body {
+      font-size: 8px;
+    }
+
+    /* Leaderboard word display bigger */
+    #rank1-word { font-size: clamp(22px, 3vw, 34px) !important; }
+    #rank2-word, #rank3-word { font-size: clamp(18px, 2.5vw, 26px) !important; }
+  }
+
+  /* ============================================================
+     WIDE DESKTOP (1200px+)
+  ============================================================ */
+  @media (min-width: 1200px) {
+    .desktop {
+      max-width: 860px;
+    }
+    .icon-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .pixel-icon {
+      width: 72px;
+      height: 72px;
+    }
+  }
+
+  /* ============================================================
+     MOBILE LAYOUT (max 767px)
+  ============================================================ */
+  @media (max-width: 767px) {
+    /* Prevent horizontal scroll */
+    html, body {
+      overflow-x: hidden;
+    }
+
+    .desktop {
+      padding: 8px 6px 16px;
+    }
+
+    /* Taskbar: compact on mobile */
+    .taskbar {
+      height: 28px;
+      padding: 2px 4px;
+      gap: 3px;
+    }
+    .taskbar-left {
+      gap: 3px;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .start-btn {
+      font-size: 5px;
+      padding: 2px 5px;
+      flex-shrink: 0;
+    }
+    .start-btn .win-logo {
+      width: 11px;
+      height: 11px;
+    }
+    .taskbar-task {
+      font-size: 5px;
+      padding: 1px 5px;
+      max-width: 80px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #clock {
+      font-size: 6px;
+      min-width: 38px;
+    }
+    .system-tray {
+      padding: 1px 4px;
+      gap: 3px;
+    }
+    #day-icon {
+      font-size: 12px;
+    }
+
+    /* Window title bars */
+    .window-title-text,
+    .winamp-title-text {
+      font-size: 6px;
+    }
+    .win-ctrl {
+      width: 13px;
+      height: 11px;
+      font-size: 6px;
+    }
+
+    /* Photos row: scroll horizontally & smaller on tiny screens */
+    .title-window .window-content div[style*="flex-direction:row"],
+    .title-window .window-content div[style*="flex-direction: row"] {
+      gap: 6px !important;
+      padding-bottom: 4px;
+    }
+
+    /* Icon grid: 2 columns (already default, but ensure padding is tight) */
+    .icon-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+    .icon-item {
+      padding: 9px 6px 8px;
+    }
+    .pixel-icon {
+      width: 44px;
+      height: 44px;
+    }
+    .icon-label {
+      font-size: 11px;
+    }
+
+    /* 3D box: shorter on mobile */
+    #box3d {
+      height: 160px !important;
+    }
+
+    /* Box size slider label */
+    #box3d + div span {
+      font-size: 4px;
+    }
+
+    /* Winamp: tighter */
+    .winamp-display {
+      margin: 4px;
+      padding: 5px 6px;
+      min-height: 30px;
+    }
+    .winamp-track-info {
+      font-size: 5px;
+    }
+    .winamp-eq {
+      height: 12px;
+    }
+    .eq-bar {
+      width: 3px;
+    }
+    .eq-bar:nth-child(1) { height: 3px; }
+    .eq-bar:nth-child(2) { height: 8px; }
+    .eq-bar:nth-child(3) { height: 6px; }
+    .eq-bar:nth-child(4) { height: 10px; }
+    .eq-bar:nth-child(5) { height: 4px; }
+    .eq-bar:nth-child(6) { height: 7px; }
+    .eq-bar:nth-child(7) { height: 11px; }
+    .eq-bar:nth-child(8) { height: 5px; }
+
+    /* Control buttons: larger tap targets */
+    .ctrl-btn {
+      font-size: 9px !important;
+      padding: 5px 8px !important;
+    }
+
+    /* Playlist items: easier to tap */
+    .playlist-item {
+      padding: 7px 8px !important;
+      font-size: 6px !important;
+    }
+
+    /* Volume track: taller tap area */
+    .vol-track {
+      height: 10px !important;
+    }
+
+    /* Progress track: taller tap area */
+    #progress-track {
+      height: 10px !important;
+    }
+
+    /* Marquee font smaller */
+    .marquee-title {
+      font-size: clamp(8px, 2.5vw, 12px) !important;
+    }
+    .main-title {
+      font-size: clamp(12px, 4vw, 18px);
+    }
+    .sub-title {
+      font-size: 6px;
+    }
+
+    /* Footer */
+    .footer-text {
+      font-size: 5px;
+    }
+    .label-logo {
+      font-size: 9px;
+      padding: 2px 4px;
+    }
+
+    /* Dialog: full-width on mobile */
+    .dialog-box {
+      width: min(92vw, 280px);
+    }
+    .dialog-body {
+      font-size: 6px;
+      padding: 10px 10px 8px;
+    }
+    .dialog-title { font-size: 6px; }
+
+    /* WOTM page: leaderboard items stack better */
+    #rank1-word { font-size: clamp(16px, 5vw, 24px) !important; }
+    #rank2-word, #rank3-word { font-size: clamp(13px, 4vw, 20px) !important; }
+
+    /* Leaderboard rank blocks: smaller padding */
+    #page-wotm [style*="padding:8px 10px"] {
+      padding: 6px 8px !important;
+      gap: 7px !important;
+    }
+
+    /* Boot screen text: smaller */
+    .boot-logo {
+      font-size: 13px;
+    }
+    .boot-text {
+      font-size: 7px;
+    }
+    .boot-bar-wrap {
+      width: 180px;
+    }
+
+    /* Loading screen: fit width */
+    #loading-screen > div {
+      width: min(96vw, 340px) !important;
+    }
+
+    /* Bottom GIFs in WOTM */
+    #page-wotm img[style*="width:48%"] {
+      width: 47% !important;
+    }
+
+    /* Marquee GIF slots: hide on very small screens to avoid overflow */
+    #marquee-gif-left, #marquee-gif-right {
+      min-width: 28px !important;
+    }
+
+    /* Desktop icon labels: smaller */
+    .desktop-icon-label {
+      font-size: 8px;
+    }
+
+    /* Scrollbar: hide heavy scrollbar on mobile (use native) */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-button {
+      display: none;
+    }
+
+    /* WOTM scrollable body: full height */
+    #wotm-window [style*="max-height:calc(100vh - 160px)"] {
+      max-height: calc(100vh - 100px) !important;
+    }
+  }
+
+  /* ============================================================
+     EXTRA SMALL MOBILE (max 375px)
+  ============================================================ */
+  @media (max-width: 375px) {
+    .taskbar-task {
+      max-width: 60px;
+      font-size: 4.5px;
+    }
+    .start-btn {
+      font-size: 4.5px;
+    }
+    .icon-grid {
+      gap: 5px;
+    }
+    .pixel-icon {
+      width: 38px;
+      height: 38px;
+    }
+    .icon-label {
+      font-size: 10px;
+    }
+    .icon-item {
+      padding: 7px 4px 6px;
+    }
+    #box3d {
+      height: 140px !important;
+    }
+    .main-title {
+      font-size: clamp(10px, 3.5vw, 15px);
+    }
+  }
 </style>
 </head>
 <body>
@@ -912,7 +1291,7 @@
         <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
           <div style="border-top:3px solid #555;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px;background:#808080;">
             <div style="border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;padding:2px;background:#c0c0c0;">
-              <img src="https://files.catbox.moe/igo89d.jpg" style="display:block;width:90px;height:90px;object-fit:cover;cursor:zoom-in;" onclick="openLightbox(this.src)"/>
+              <img src="https://files.catbox.moe/igo89d.jpg" style="display:block;width:clamp(65px,18vw,110px);height:clamp(65px,18vw,110px);object-fit:cover;cursor:zoom-in;" onclick="openLightbox(this.src)"/>
             </div>
           </div>
           <div style="font-family:'Times New Roman',serif;font-size:10px;color:#000;background:#c0c0c0;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px 4px;width:100%;text-align:center;font-weight:bold;">this person is<br>literally me 😭</div>
@@ -921,7 +1300,7 @@
         <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
           <div style="border-top:3px solid #555;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px;background:#808080;">
             <div style="border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;padding:2px;background:#c0c0c0;">
-              <img src="https://files.catbox.moe/drtydz.jpeg" style="display:block;width:90px;height:90px;object-fit:cover;cursor:zoom-in;" onclick="openLightbox(this.src)"/>
+              <img src="https://files.catbox.moe/drtydz.jpeg" style="display:block;width:clamp(65px,18vw,110px);height:clamp(65px,18vw,110px);object-fit:cover;cursor:zoom-in;" onclick="openLightbox(this.src)"/>
             </div>
           </div>
           <div style="font-family:'Times New Roman',serif;font-size:10px;color:#000;background:#c0c0c0;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px 4px;width:100%;text-align:center;font-weight:bold;">i love her 🥹</div>
@@ -930,7 +1309,7 @@
         <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
           <div style="border-top:3px solid #555;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px;background:#808080;">
             <div style="border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;padding:2px;background:#c0c0c0;">
-              <img src="https://files.catbox.moe/a1u84s.jpeg" style="display:block;width:90px;height:90px;object-fit:cover;cursor:zoom-in;" onclick="openLightbox(this.src)"/>
+              <img src="https://files.catbox.moe/a1u84s.jpeg" style="display:block;width:clamp(65px,18vw,110px);height:clamp(65px,18vw,110px);object-fit:cover;cursor:zoom-in;" onclick="openLightbox(this.src)"/>
             </div>
           </div>
           <div style="font-family:'Times New Roman',serif;font-size:10px;color:#000;background:#c0c0c0;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px 4px;width:100%;text-align:center;font-weight:bold;">me at the<br>convention 🎪</div>
