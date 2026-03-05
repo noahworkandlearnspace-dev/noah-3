@@ -1161,7 +1161,7 @@
   }
 
   function draw(){
-    const page1 = document.getElementById('page-noah');
+    const page1 = document.getElementById('page-wotm');
     if(!page1 || page1.style.display === 'none'){
       canvas.style.opacity = '0';
       requestAnimationFrame(draw);
@@ -1253,18 +1253,98 @@
 </div>
 
 <!-- PAGE WRAPPER -->
-<div id="page-noah" style="display:block;">
+<div id="page-noah" style="display:block;position:relative;">
+  <!-- TILED BG for page 1 -->
+  <canvas id="noah-tile-bg" style="position:fixed;inset:0;z-index:0;pointer-events:none;width:100%;height:100%;opacity:0.13;"></canvas>
+  <script>
+  (function(){
+    const c = document.getElementById('noah-tile-bg');
+    const ctx = c.getContext('2d');
+    let W, H;
+    function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Pre-generate static frames for performance
+    const FRAMES = 4;
+    const offscreens = [];
+    function buildFrames() {
+      offscreens.length = 0;
+      for (let f = 0; f < FRAMES; f++) {
+        const oc = document.createElement('canvas');
+        oc.width = W; oc.height = H;
+        const octx = oc.getContext('2d');
+        const img = octx.createImageData(W, H);
+        const data = img.data;
+        for (let i = 0; i < data.length; i += 4) {
+          // mostly dark noise, occasional bright pixel
+          const v = Math.random() < 0.04 ? (Math.random() * 255) : (Math.random() * 30);
+          // slight greenish tint for CRT feel
+          data[i]   = v * 0.6;
+          data[i+1] = v;
+          data[i+2] = v * 0.7;
+          data[i+3] = 255;
+        }
+        // scanline overlay
+        for (let y = 0; y < H; y += 3) {
+          for (let x = 0; x < W; x++) {
+            const idx = (y * W + x) * 4;
+            data[idx]   *= 0.6;
+            data[idx+1] *= 0.6;
+            data[idx+2] *= 0.6;
+          }
+        }
+        // occasional horizontal glitch band
+        const bands = Math.floor(Math.random() * 3) + 1;
+        for (let b = 0; b < bands; b++) {
+          const by = Math.floor(Math.random() * H);
+          const bh = Math.floor(Math.random() * 6) + 2;
+          for (let y2 = by; y2 < Math.min(by + bh, H); y2++) {
+            for (let x = 0; x < W; x++) {
+              const idx = (y2 * W + x) * 4;
+              data[idx]   = Math.random() * 180;
+              data[idx+1] = Math.random() * 255;
+              data[idx+2] = Math.random() * 180;
+              data[idx+3] = 255;
+            }
+          }
+        }
+        octx.putImageData(img, 0, 0);
+        offscreens.push(oc);
+      }
+    }
+    buildFrames();
+    window.addEventListener('resize', buildFrames);
+
+    let frame = 0;
+    let lastTime = 0;
+    const FPS = 10; // subtle: 10fps so it doesn't distract
+    function draw(ts) {
+      if (ts - lastTime > 1000 / FPS) {
+        frame = (frame + 1) % FRAMES;
+        ctx.clearRect(0, 0, W, H);
+        ctx.drawImage(offscreens[frame], 0, 0);
+        lastTime = ts;
+      }
+      // Only animate when page-noah is visible
+      const pg = document.getElementById('page-noah');
+      if (pg && pg.style.display !== 'none') requestAnimationFrame(draw);
+      else setTimeout(() => requestAnimationFrame(draw), 500);
+    }
+    requestAnimationFrame(draw);
+  })();
+  </script>
 <!-- DESKTOP -->
 <div class="desktop" id="desktop-col">
 
   <!-- TITLE WINDOW -->
   <div class="title-window" id="noah-window" style="position:relative;">
-    <div class="window-titlebar" id="noah-titlebar" style="cursor:grab;">
+    <div class="window-titlebar" id="noah-titlebar" style="cursor:default;">
       <span class="window-title-text">🎵 NOAH SANCTUARY.exe</span>
       <div class="window-controls">
-        <div class="win-ctrl">_</div>
-        <div class="win-ctrl">□</div>
-        <div class="win-ctrl" onclick="showDialog('Sorry!','This band cannot be closed.')">✕</div>
+        <div class="win-ctrl" onclick="showDialog('nope!','this band cannot be minimized 😤')" style="color:#aaa;cursor:not-allowed;" title="Disabled">_</div>
+        <div class="win-ctrl" onclick="showDialog('nope!','you cant maximize this one 😊')" title="Maximize">□</div>
+        <div class="win-ctrl" onclick="showDialog('Sorry!','This band cannot be closed.')" title="Close">✕</div>
       </div>
     </div>
 
@@ -1499,11 +1579,18 @@
 
   <!-- FOOTER -->
   <div class="footer-window">
-    <div class="footer-text">
-      © 2025 NOAH SANCTUARY<br>
-      ————————————<br>
-      MADE BY CLAUDE AI<br>
-      AND DESIGNED BY NOAH
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+      <!-- GIF kiri -->
+      <img src="https://files.catbox.moe/39ncsd.gif" style="width:48px;height:48px;image-rendering:pixelated;border-top:2px solid #555;border-left:2px solid #555;border-right:2px solid #fff;border-bottom:2px solid #fff;flex-shrink:0;cursor:pointer;" onclick="inspectGif(this,'39ncsd.gif','GIF Image','48x48','Animated')" title="Right-click → Properties" />
+      <!-- TEXT tengah -->
+      <div class="footer-text">
+        © 2025 NOAH SANCTUARY<br>
+        ————————————<br>
+        MADE BY CLAUDE AI<br>
+        AND DESIGNED BY NOAH
+      </div>
+      <!-- GIF kanan -->
+      <img src="https://files.catbox.moe/6j4tx9.gif" style="width:48px;height:48px;image-rendering:pixelated;border-top:2px solid #555;border-left:2px solid #555;border-right:2px solid #fff;border-bottom:2px solid #fff;flex-shrink:0;cursor:pointer;" onclick="inspectGif(this,'6j4tx9.gif','GIF Image','48x48','Animated')" title="Click to inspect" />
     </div>
 
     <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#808080;margin-top:8px;">
@@ -1658,8 +1745,8 @@
 
       <!-- BOTTOM GIFs -->
       <div style="background:#000;border-top:2px solid #333;padding:10px 8px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <img src="https://files.catbox.moe/9b4uh4.gif" style="width:48%;image-rendering:pixelated;border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;box-shadow:2px 2px 0 #000;" />
-        <img src="https://files.catbox.moe/e04wtw.gif" style="width:48%;image-rendering:pixelated;border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;box-shadow:2px 2px 0 #000;" />
+        <img src="https://files.catbox.moe/9b4uh4.gif" style="width:48%;image-rendering:pixelated;border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;box-shadow:2px 2px 0 #000;cursor:pointer;" onclick="inspectGif(this,'9b4uh4.gif','GIF Image','auto','Animated')" title="Click to inspect" />
+        <img src="https://files.catbox.moe/e04wtw.gif" style="width:48%;image-rendering:pixelated;border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;box-shadow:2px 2px 0 #000;cursor:pointer;" onclick="inspectGif(this,'e04wtw.gif','GIF Image','auto','Animated')" title="Click to inspect" />
       </div>
 
   </div><!-- end scrollable body -->
@@ -1671,53 +1758,7 @@
 
 
 
-<script>
-// ── DRAG TO MOVE WIN95 WINDOW ─────────────────────────────────────
-(function(){
-  // DRAG — NOAH WINDOW
-  const noahWin = document.getElementById('noah-window');
-  const noahBar = document.getElementById('noah-titlebar');
-  let noahDragging = false, nox = 0, noy = 0;
-  noahBar.addEventListener('mousedown', e=>{
-    noahDragging = true;
-    noahWin.style.position = 'fixed';
-    noahWin.style.zIndex = 1000;
-    noahWin.style.width = noahWin.offsetWidth + 'px';
-    const r = noahWin.getBoundingClientRect();
-    noahWin.style.left = r.left + 'px';
-    noahWin.style.top = r.top + 'px';
-    nox = e.clientX - r.left;
-    noy = e.clientY - r.top;
-    noahBar.style.cursor = 'grabbing';
-    e.preventDefault();
-  });
-  window.addEventListener('mousemove', e=>{
-    if(!noahDragging) return;
-    noahWin.style.left = (e.clientX - nox) + 'px';
-    noahWin.style.top = (e.clientY - noy) + 'px';
-  });
-  window.addEventListener('mouseup', ()=>{ noahDragging = false; noahBar.style.cursor = 'grab'; });
-  noahBar.addEventListener('touchstart', e=>{
-    noahDragging = true;
-    noahWin.style.position = 'fixed';
-    noahWin.style.zIndex = 1000;
-    noahWin.style.width = noahWin.offsetWidth + 'px';
-    const r = noahWin.getBoundingClientRect();
-    noahWin.style.left = r.left + 'px';
-    noahWin.style.top = r.top + 'px';
-    nox = e.touches[0].clientX - r.left;
-    noy = e.touches[0].clientY - r.top;
-    e.preventDefault();
-  },{passive:false});
-  window.addEventListener('touchmove', e=>{
-    if(!noahDragging) return;
-    noahWin.style.left = (e.touches[0].clientX - nox) + 'px';
-    noahWin.style.top = (e.touches[0].clientY - noy) + 'px';
-  },{passive:false});
-  window.addEventListener('touchend', ()=>{ noahDragging = false; });
-
-})();
-</script>
+<!-- drag disabled: windows are static -->
 
 <!-- LIGHTBOX -->
 <div id="lightbox" onclick="closeLightbox()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:center;justify-content:center;cursor:zoom-out;">
@@ -1838,12 +1879,37 @@
 <script>
 // GIF INSPECT
 function inspectGif(el, name, type, size, extra) {
-  document.getElementById('gif-inspect-preview').src = el.src;
+  const preview = document.getElementById('gif-inspect-preview');
+  preview.src = el.src;
   document.getElementById('gif-inspect-name').textContent = name;
   document.getElementById('gif-inspect-type').textContent = type + ' (' + extra + ')';
-  document.getElementById('gif-inspect-size').textContent = size + ' px';
   document.getElementById('gif-inspect-src').textContent = el.src;
-  document.getElementById('gif-inspect-dialog').style.display = 'block';
+
+  // Get real dimensions
+  const tmp = new Image();
+  tmp.onload = function() {
+    document.getElementById('gif-inspect-size').textContent = tmp.naturalWidth + ' x ' + tmp.naturalHeight + ' px';
+  };
+  tmp.src = el.src;
+  if (el.naturalWidth) {
+    document.getElementById('gif-inspect-size').textContent = el.naturalWidth + ' x ' + el.naturalHeight + ' px';
+  } else {
+    document.getElementById('gif-inspect-size').textContent = size + ' px';
+  }
+
+  const dialog = document.getElementById('gif-inspect-dialog');
+  dialog.style.display = 'block';
+  // pop-in animation
+  dialog.style.transform = 'translate(-50%,-50%) scale(0.85)';
+  dialog.style.opacity = '0';
+  dialog.style.transition = 'transform 0.12s steps(3), opacity 0.12s steps(3)';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      dialog.style.transform = 'translate(-50%,-50%) scale(1)';
+      dialog.style.opacity = '1';
+    });
+  });
+  setTimeout(() => { dialog.style.transition = ''; }, 150);
 }
 
 const loadingMessages = [
@@ -1862,16 +1928,19 @@ function activateTab(tab) {
   const wotmPage = document.getElementById('page-wotm');
   const tabNoah  = document.getElementById('tab-noah');
   const tabWotm  = document.getElementById('tab-wotm');
+  const tileBg   = document.getElementById('noah-tile-bg');
   const raised = ';border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);';
   const sunken = ';border-top:2px solid var(--win-dark);border-left:2px solid var(--win-dark);border-right:2px solid var(--win-light);border-bottom:2px solid var(--win-light);';
   if (tab === 'noah') {
     noahPage.style.display = 'block';
     wotmPage.style.display = 'none';
+    if (tileBg) tileBg.style.display = 'block';
     tabNoah.style.cssText += sunken;
     tabWotm.style.cssText += raised;
   } else {
     noahPage.style.display = 'none';
     wotmPage.style.display = 'block';
+    if (tileBg) tileBg.style.display = 'none';
     tabWotm.style.cssText += sunken;
     tabNoah.style.cssText += raised;
   }
@@ -2260,5 +2329,60 @@ function closeDialog() { document.getElementById('dialog-overlay').classList.rem
 
 
 </script>
+
+<script>
+// MINIMIZE / RESTORE — NOAH SANCTUARY window
+function minimizeNoah() {
+  const win = document.getElementById('noah-window');
+  const taskbarBtn = document.getElementById('tab-noah');
+  const isMinimized = win.dataset.minimized === 'true';
+  if (!isMinimized) {
+    win.dataset.minimized = 'true';
+    win.style.transformOrigin = 'bottom center';
+    win.style.transition = 'transform 0.15s steps(3), opacity 0.15s steps(3)';
+    win.style.transform = 'scaleY(0)';
+    win.style.opacity = '0';
+    win.style.pointerEvents = 'none';
+    setTimeout(() => { win.style.display = 'none'; }, 160);
+    taskbarBtn.style.borderTop = '2px solid var(--win-dark)';
+    taskbarBtn.style.borderLeft = '2px solid var(--win-dark)';
+    taskbarBtn.style.borderRight = '2px solid var(--win-light)';
+    taskbarBtn.style.borderBottom = '2px solid var(--win-light)';
+    taskbarBtn.style.animation = 'blinkAnim 1.2s steps(1) infinite';
+  } else {
+    restoreNoah();
+  }
+}
+function restoreNoah() {
+  const win = document.getElementById('noah-window');
+  const taskbarBtn = document.getElementById('tab-noah');
+  win.dataset.minimized = 'false';
+  win.style.display = '';
+  win.style.pointerEvents = '';
+  win.style.transformOrigin = 'bottom center';
+  win.style.transform = 'scaleY(0)';
+  win.style.opacity = '0';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      win.style.transition = 'transform 0.18s steps(3), opacity 0.18s steps(3)';
+      win.style.transform = '';
+      win.style.opacity = '';
+    });
+  });
+  setTimeout(() => { win.style.transition = ''; }, 220);
+  taskbarBtn.style.borderTop = '';
+  taskbarBtn.style.borderLeft = '';
+  taskbarBtn.style.borderRight = '';
+  taskbarBtn.style.borderBottom = '';
+  taskbarBtn.style.animation = '';
+}
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('tab-noah').addEventListener('click', function() {
+    const win = document.getElementById('noah-window');
+    if (win.dataset.minimized === 'true') restoreNoah();
+  });
+});
+</script>
+
 </body>
 </html>
