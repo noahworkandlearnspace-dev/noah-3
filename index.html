@@ -4,9 +4,70 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>NOAH SANCTUARY — Official</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Dirt&family=Rubik+Glitch&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* WINDOWS XP SCROLLBAR */
+  ::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #d4d0c8;
+    border-left: 1px solid #808080;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #f0ede4 0%, #d8d4ca 40%, #b8b4aa 100%);
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    min-height: 20px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #e8e4da 0%, #c8c4ba 40%, #a8a49a 100%);
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(180deg, #b8b4aa 0%, #c8c4ba 100%);
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+  }
+  ::-webkit-scrollbar-button:single-button {
+    background: linear-gradient(180deg, #f0ede4 0%, #d8d4ca 100%);
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+  ::-webkit-scrollbar-button:single-button:active {
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+  }
+  ::-webkit-scrollbar-button:single-button:vertical:decrement {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpolygon points='8,4 13,12 3,12' fill='%23000'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 8px;
+    background-color: #d4d0c8;
+  }
+  ::-webkit-scrollbar-button:single-button:vertical:increment {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpolygon points='8,12 13,4 3,4' fill='%23000'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 8px;
+    background-color: #d4d0c8;
+  }
+  ::-webkit-scrollbar-corner {
+    background: #d4d0c8;
+  }
 
   /* BOOT SCREEN */
   #boot-screen {
@@ -122,10 +183,6 @@
     pointer-events: none;
   }
 
-  #main-content, .desktop {
-    position: relative;
-    z-index: 1;
-  }
 
   /* GRAIN OVERLAY */
   body::before {
@@ -276,8 +333,12 @@
   /* MAIN CONTENT */
   .desktop {
     padding: 12px 10px 20px;
-    max-width: 480px;
+    width: 100%;
+    max-width: 100%;
     margin: 0 auto;
+    transition: max-width 0.3s ease;
+    position: relative;
+    z-index: 1;
   }
 
   /* TITLE WINDOW */
@@ -745,13 +806,14 @@
 <!-- TASKBAR -->
 <div class="taskbar">
   <div class="taskbar-left">
-    <button class="start-btn">
+    <button class="start-btn" onclick="location.reload()">
       <div class="win-logo">
         <span></span><span></span><span></span><span></span>
       </div>
       Start
     </button>
-    <div class="taskbar-task">⊞ NOAH SANCTUARY — Official</div>
+    <div class="taskbar-task" id="tab-noah" onclick="switchTab('noah')" style="cursor:pointer;">⊞ NOAH SANCTUARY — Official</div>
+    <div class="taskbar-task" id="tab-wotm" onclick="switchTab('wotm')" style="cursor:pointer;border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);">📝 QUOTES OF THIS MONTH</div>
   </div>
   <div class="taskbar-right">
     <div class="system-tray">
@@ -761,11 +823,19 @@
   </div>
 </div>
 
+<!-- PAGE WRAPPER -->
+<div id="page-noah" style="display:block;">
 <!-- DESKTOP -->
-<div class="desktop">
+<div class="desktop" id="desktop-col">
+
+  <!-- TITLE WINDOW + SIDE PANELS -->
+  <div style="display:grid;grid-template-columns:48px 1fr 48px;gap:4px;margin-bottom:14px;align-items:stretch;">
+
+    <!-- LEFT PANEL -->
+    <div id="side-panel-left" style="background:var(--win-gray);border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);box-shadow:2px 2px 0 #000;display:flex;align-items:center;justify-content:center;min-height:100%;"><img src="https://files.catbox.moe/6j4tx9.gif" onclick="inspectGif(this,'6j4tx9.gif','GIF Image','64x64','Animated GIF')" style="width:44px;image-rendering:pixelated;display:block;cursor:pointer;" /></div>
 
   <!-- TITLE WINDOW -->
-  <div class="title-window">
+  <div class="title-window" style="margin-bottom:0;align-self:stretch;">
     <div class="window-titlebar">
       <span class="window-title-text">🎵 NOAH SANCTUARY.exe</span>
       <div class="window-controls">
@@ -774,20 +844,26 @@
         <div class="win-ctrl" onclick="showDialog('Sorry!','This band cannot be closed.')">✕</div>
       </div>
     </div>
+
+    <!-- PHOTOS ROW -->
     <div class="window-content">
-      <div style="overflow:hidden;width:100%;margin-bottom:4px;">
-        <div class="marquee-title">
-          ★ NOAH SANCTUARY ★ NOAH SANCTUARY ★ NOAH SANCTUARY ★ NOAH SANCTUARY ★&nbsp;
+      <div style="display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px;margin-bottom:4px;">
+        <!-- GIF slot kiri -->
+        <div id="marquee-gif-left" style="flex-shrink:0;min-width:40px;"></div>
+        <!-- MARQUEE -->
+        <div style="overflow:hidden;">
+          <div class="marquee-title" style="font-family:'Times New Roman',serif;">
+            ★ NOAH SANCTUARY ★ NOAH SANCTUARY ★ NOAH SANCTUARY ★ NOAH SANCTUARY ★&nbsp;
+          </div>
         </div>
+        <!-- GIF slot kanan -->
+        <div id="marquee-gif-right" style="flex-shrink:0;min-width:40px;"></div>
       </div>
       <div class="sub-title">— OFFICIAL —</div>
       <div style="font-family:'Press Start 2P',monospace;font-size:6px;color:#808080;margin-top:4px;">
         EST. 1998 · Ver. 6.0
       </div>
-
-      <!-- PHOTOS ROW - semua foto ke samping -->
       <div style="margin:12px auto 4px;display:flex;flex-direction:row;align-items:flex-start;justify-content:center;gap:8px;flex-wrap:nowrap;overflow-x:auto;">
-
         <!-- PHOTO 1 -->
         <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
           <div style="border-top:3px solid #555;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px;background:#808080;">
@@ -797,7 +873,6 @@
           </div>
           <div style="font-family:'Times New Roman',serif;font-size:10px;color:#000;background:#c0c0c0;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px 4px;width:100%;text-align:center;font-weight:bold;">this person is<br>literally me 😭</div>
         </div>
-
         <!-- PHOTO 2 -->
         <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
           <div style="border-top:3px solid #555;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px;background:#808080;">
@@ -807,7 +882,6 @@
           </div>
           <div style="font-family:'Times New Roman',serif;font-size:10px;color:#000;background:#c0c0c0;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px 4px;width:100%;text-align:center;font-weight:bold;">i love her 🥹</div>
         </div>
-
         <!-- PHOTO 3 -->
         <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
           <div style="border-top:3px solid #555;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px;background:#808080;">
@@ -817,10 +891,15 @@
           </div>
           <div style="font-family:'Times New Roman',serif;font-size:10px;color:#000;background:#c0c0c0;border-left:3px solid #555;border-right:3px solid #fff;border-bottom:3px solid #fff;padding:2px 4px;width:100%;text-align:center;font-weight:bold;">me at the<br>convention 🎪</div>
         </div>
-
       </div>
-  </div>
-</div>
+    </div>
+
+  </div><!-- end title-window -->
+
+    <!-- RIGHT PANEL — Win95 border, slot for GIF -->
+    <div id="side-panel-right" style="background:var(--win-gray);border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);box-shadow:2px 2px 0 #000;display:flex;align-items:center;justify-content:center;min-height:100%;align-self:stretch;"><img src="https://files.catbox.moe/39ncsd.gif" onclick="inspectGif(this,'39ncsd.gif','GIF Image','64x64','Animated GIF')" style="width:44px;image-rendering:pixelated;display:block;cursor:pointer;" /></div>
+
+  </div><!-- end side panels grid -->
 
   <!-- 3D BOX WINDOW -->
   <div class="title-window" style="margin-bottom:14px;">
@@ -992,8 +1071,11 @@
 
     <div class="winamp-volume">
       <span class="vol-label">VOL</span>
-      <div class="vol-track"><div class="vol-fill" id="vol-fill"></div></div>
-      <span class="vol-label">70%</span>
+      <div class="vol-track" id="vol-track" onclick="setVolume(event)" style="cursor:pointer;">
+        <div class="vol-fill" id="vol-fill"></div>
+        <div id="vol-thumb" style="position:absolute;top:50%;right:calc(30% - 4px);transform:translateY(-50%);width:8px;height:12px;background:var(--win-gray);border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);cursor:ew-resize;"></div>
+      </div>
+      <span class="vol-label" id="vol-pct">70%</span>
     </div>
   </div>
 
@@ -1012,6 +1094,340 @@
   </div>
 
 </div><!-- end desktop -->
+</div><!-- end page-noah -->
+
+<!-- GIF INSPECT DIALOG -->
+<div id="gif-inspect-dialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:var(--win-gray);border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);box-shadow:4px 4px 0 #000;min-width:260px;font-family:'Press Start 2P',monospace;">
+  <div style="background:linear-gradient(90deg,#000080,#1084d0);padding:4px 6px;display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-size:7px;color:#fff;">🔍 Properties</span>
+    <div class="win-ctrl" onclick="document.getElementById('gif-inspect-dialog').style.display='none'">✕</div>
+  </div>
+  <div style="padding:10px;display:flex;gap:10px;align-items:flex-start;">
+    <img id="gif-inspect-preview" src="" style="width:80px;height:80px;object-fit:contain;border-top:2px solid #555;border-left:2px solid #555;border-right:2px solid #fff;border-bottom:2px solid #fff;image-rendering:pixelated;flex-shrink:0;" />
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:5px;color:#000;">
+      <div><span style="color:#000080;">FILE:</span><br><span id="gif-inspect-name" style="color:#333;"></span></div>
+      <div><span style="color:#000080;">TYPE:</span><br><span id="gif-inspect-type"></span></div>
+      <div><span style="color:#000080;">SIZE:</span><br><span id="gif-inspect-size"></span></div>
+      <div><span style="color:#000080;">SOURCE:</span><br><span id="gif-inspect-src" style="color:#0000ee;word-break:break-all;font-size:4px;"></span></div>
+    </div>
+  </div>
+  <div style="padding:0 10px 10px;display:flex;justify-content:center;">
+    <button onclick="document.getElementById('gif-inspect-dialog').style.display='none'" style="font-family:'Press Start 2P',monospace;font-size:6px;padding:4px 18px;background:var(--win-gray);border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);cursor:pointer;">OK</button>
+  </div>
+</div>
+
+<!-- PAGE: WORD OF THE MONTH -->
+<div id="page-wotm" style="display:none;position:relative;min-height:calc(100vh - 32px);overflow:hidden;">
+
+  <!-- DVD SCREENSAVER CANVAS -->
+  <canvas id="dvd-canvas" style="position:fixed;top:32px;left:0;width:100%;height:calc(100vh - 32px);z-index:0;background:#000;"></canvas>
+
+  <!-- FLOATING WIN95 WINDOW (draggable) -->
+  <div id="wotm-window" style="
+    position:fixed;
+    top:80px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(92vw,420px);
+    z-index:10;
+    background:var(--win-gray);
+    border-top:2px solid var(--win-light);
+    border-left:2px solid var(--win-light);
+    border-right:2px solid var(--win-dark);
+    border-bottom:2px solid var(--win-dark);
+    box-shadow:3px 3px 0 #000;
+    cursor:default;
+    user-select:none;
+  ">
+    <!-- TITLEBAR (drag handle) -->
+    <div id="wotm-titlebar" style="
+      background:linear-gradient(90deg,#000080,#1084d0);
+      padding:3px 5px;
+      display:flex;align-items:center;justify-content:space-between;
+      cursor:move;
+    ">
+      <span style="font-family:'Press Start 2P',monospace;font-size:7px;color:#fff;letter-spacing:1px;">📀 QUOTES_OF_THIS_MONTH.exe</span>
+      <div style="display:flex;gap:2px;">
+        <div class="win-ctrl">_</div>
+        <div class="win-ctrl">□</div>
+        <div class="win-ctrl" onclick="showDialog('nope!','you cant close this one 😊')">✕</div>
+      </div>
+    </div>
+
+    <!-- SCROLLABLE BODY -->
+    <div style="padding:0;overflow-y:auto;max-height:calc(100vh - 160px);">
+
+      <div style="padding:12px 10px 14px;">
+      <div style="overflow:hidden;width:100%;margin-bottom:8px;">
+        <div class="marquee-title">★ QUOTES OF THIS MONTH ★ QUOTES OF THIS MONTH ★ QUOTES OF THIS MONTH ★&nbsp;</div>
+      </div>
+      <div class="sub-title">— TOP QUOTES THIS MONTH —</div>
+      <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#808080;margin-top:4px;margin-bottom:12px;">EVERY MONTH · NEW QUOTE · NEW VIBES</div>
+
+      <!-- LEADERBOARD WINDOW -->
+      <div style="background:var(--win-gray);border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);margin-bottom:12px;">
+        <div style="background:linear-gradient(90deg,#000080,#1084d0);padding:3px 6px;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-family:'Press Start 2P',monospace;font-size:6px;color:#fff;">🏆 LEADERBOARD.exe</span>
+          <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:#ffd700;animation:blinkAnim 1s steps(1) infinite;">LIVE</span>
+        </div>
+        <div style="padding:8px 8px 10px;display:flex;flex-direction:column;gap:6px;">
+
+          <!-- RANK 1 -->
+          <div style="background:#000;border:2px solid #ffd700;padding:8px 10px;display:flex;align-items:center;gap:10px;box-shadow:0 0 10px rgba(255,215,0,0.4);">
+            <div style="font-size:22px;flex-shrink:0;">🥇</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#ffd700;margin-bottom:4px;">RANK #1</div>
+              <div id="rank1-word" style="font-family:'Rubik Glitch',cursive;font-size:clamp(18px,5vw,28px);color:#ffd700;letter-spacing:3px;text-shadow:0 0 12px #ffd700,2px 2px 0 #b8860b,-2px -2px 0 #ff6600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">???</div>
+              <div id="rank1-votes" style="font-family:'Times New Roman',serif;font-size:10px;color:#888;margin-top:3px;font-style:italic;">— not set yet —</div>
+            </div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#ffd700;flex-shrink:0;text-align:right;">
+              <div id="rank1-count" style="font-size:12px;">–</div>
+              <div style="color:#555;margin-top:2px;">votes</div>
+            </div>
+          </div>
+
+          <!-- RANK 2 -->
+          <div style="background:#000;border:2px solid #aaa;padding:8px 10px;display:flex;align-items:center;gap:10px;box-shadow:0 0 6px rgba(200,200,200,0.2);">
+            <div style="font-size:22px;flex-shrink:0;">🥈</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#aaa;margin-bottom:4px;">RANK #2</div>
+              <div id="rank2-word" style="font-family:'Rubik Glitch',cursive;font-size:clamp(15px,4vw,22px);color:#c0c0c0;letter-spacing:2px;text-shadow:2px 2px 0 #555,-1px -1px 0 #888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">???</div>
+              <div id="rank2-votes" style="font-family:'Times New Roman',serif;font-size:10px;color:#666;margin-top:3px;font-style:italic;">— not set yet —</div>
+            </div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#aaa;flex-shrink:0;text-align:right;">
+              <div id="rank2-count" style="font-size:11px;">–</div>
+              <div style="color:#555;margin-top:2px;">votes</div>
+            </div>
+          </div>
+
+          <!-- RANK 3 -->
+          <div style="background:#000;border:2px solid #cd7f32;padding:8px 10px;display:flex;align-items:center;gap:10px;box-shadow:0 0 6px rgba(205,127,50,0.2);">
+            <div style="font-size:22px;flex-shrink:0;">🥉</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#cd7f32;margin-bottom:4px;">RANK #3</div>
+              <div id="rank3-word" style="font-family:'Rubik Glitch',cursive;font-size:clamp(15px,4vw,22px);color:#cd7f32;letter-spacing:2px;text-shadow:2px 2px 0 #6b3a10,-1px -1px 0 #a05a20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">???</div>
+              <div id="rank3-votes" style="font-family:'Times New Roman',serif;font-size:10px;color:#666;margin-top:3px;font-style:italic;">— not set yet —</div>
+            </div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#cd7f32;flex-shrink:0;text-align:right;">
+              <div id="rank3-count" style="font-size:11px;">–</div>
+              <div style="color:#555;margin-top:2px;">votes</div>
+            </div>
+          </div>
+
+          <!-- TICKER -->
+          <div style="border-top:1px solid #333;margin-top:2px;padding-top:6px;overflow:hidden;">
+            <div style="white-space:nowrap;font-family:'Press Start 2P',monospace;font-size:5px;color:#555;animation:lsMarquee 8s linear infinite;">
+              ▸ submit your quote below to get on the board &nbsp;▸ voting resets every month &nbsp;▸ only the freshest quotes make it &nbsp;▸&nbsp;
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- GOOGLE FORM WINDOW -->
+      <div style="background:var(--win-gray);border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);">
+        <div style="background:linear-gradient(90deg,#000080,#1084d0);padding:3px 6px;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-family:'Press Start 2P',monospace;font-size:6px;color:#fff;">📋 SUBMIT_QUOTE.exe</span>
+          <span style="font-family:'Press Start 2P',monospace;font-size:5px;color:#0f0;animation:blinkAnim 1s steps(1) infinite;">ONLINE</span>
+        </div>
+        <div style="padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:10px;background:#000;">
+          <div style="font-family:'Press Start 2P',monospace;font-size:6px;color:#00ff41;text-align:center;line-height:2;">GOT A QUOTE?<br>SUBMIT IT HERE!</div>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLScGoMWKOo-UodfDEfaj0aGA2yiaHQF-SzbNbSpMT87KsOK2ag/viewform" target="_blank" style="text-decoration:none;">
+            <button style="font-family:'Press Start 2P',monospace;font-size:8px;padding:10px 20px;background:var(--win-gray);border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);cursor:pointer;letter-spacing:1px;">
+              📝 SUBMIT QUOTE
+            </button>
+          </a>
+          <div style="font-family:'Press Start 2P',monospace;font-size:4px;color:#555;">OPENS IN NEW TAB</div>
+        </div>
+      </div>
+
+    </div><!-- end inner padding -->
+
+      <!-- BOTTOM GIFs -->
+      <div style="background:#000;border-top:2px solid #333;padding:10px 8px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+        <img src="https://files.catbox.moe/9b4uh4.gif" style="width:48%;image-rendering:pixelated;border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;box-shadow:2px 2px 0 #000;" />
+        <img src="https://files.catbox.moe/e04wtw.gif" style="width:48%;image-rendering:pixelated;border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #555;border-bottom:3px solid #555;box-shadow:2px 2px 0 #000;" />
+      </div>
+
+  </div><!-- end scrollable body -->
+  </div><!-- end wotm-window -->
+
+</div><!-- end page-wotm -->
+
+<style>
+/* DVD canvas always behind when wotm page active */
+#page-wotm { background: #000; }
+@keyframes spinFull {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+// ── DVD SCREENSAVER ──────────────────────────────────────────────
+(function(){
+  const canvas = document.getElementById('dvd-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let W, H;
+  function resize(){
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  // DVD logo lines (simple pixel art in canvas)
+  const DVD_W = 90, DVD_H = 50;
+  let x, y, vx, vy;
+  const colors = ['#ff2d55','#ff9f0a','#ffd60a','#34c759','#30b0c7','#007aff','#bf5af2','#ff375f','#00e5ff'];
+  let colorIdx = 0;
+  let color = colors[0];
+  let cornerHit = false;
+  let cornerFlash = 0;
+
+  function init(){
+    resize();
+    x = Math.random() * (W - DVD_W);
+    y = Math.random() * (H - DVD_H);
+    vx = 1.5;
+    vy = 1.2;
+  }
+
+  function drawDVD(cx, cy, col){
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // glow
+    ctx.shadowColor = col;
+    ctx.shadowBlur = 18;
+
+    // DVD disc shape (ellipse)
+    ctx.beginPath();
+    ctx.ellipse(DVD_W/2, DVD_H/2 - 4, DVD_W/2 - 6, DVD_H/2 - 8, 0, 0, Math.PI*2);
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // hole
+    ctx.beginPath();
+    ctx.arc(DVD_W/2, DVD_H/2 - 4, 6, 0, Math.PI*2);
+    ctx.fillStyle = '#000';
+    ctx.fill();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // shine
+    ctx.beginPath();
+    ctx.ellipse(DVD_W/2 - 10, DVD_H/2 - 12, 12, 5, -0.4, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.fill();
+
+    // "DVD" text
+    ctx.shadowBlur = 6;
+    ctx.font = "bold 13px 'Press Start 2P', monospace";
+    ctx.fillStyle = col;
+    ctx.textAlign = 'center';
+    ctx.fillText('DVD', DVD_W/2, DVD_H - 4);
+
+    // corner hit flash
+    if(cornerFlash > 0){
+      ctx.font = "6px 'Press Start 2P', monospace";
+      ctx.fillStyle = '#fff';
+      ctx.fillText('CORNER!', DVD_W/2, -6);
+    }
+
+    ctx.restore();
+  }
+
+  function frame(){
+    if(document.getElementById('page-wotm').style.display === 'none'){
+      requestAnimationFrame(frame); return;
+    }
+
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.fillRect(0,0,W,H);
+
+    // move
+    x += vx; y += vy;
+
+    let hitCorner = false;
+    let hitWall = false;
+
+    if(x <= 0){ x = 0; vx = Math.abs(vx); hitWall = true; }
+    if(x + DVD_W >= W){ x = W - DVD_W; vx = -Math.abs(vx); hitWall = true; }
+    if(y <= 0){ y = 0; vy = Math.abs(vy); hitWall = true; }
+    if(y + DVD_H >= H){ y = H - DVD_H; vy = -Math.abs(vy); hitWall = true; }
+
+    if(hitWall){
+      // check corner (within 2px of two walls at once)
+      const atLeft   = x <= 2;
+      const atRight  = x + DVD_W >= W - 2;
+      const atTop    = y <= 2;
+      const atBottom = y + DVD_H >= H - 2;
+      if((atLeft||atRight) && (atTop||atBottom)) hitCorner = true;
+
+      // change color
+      colorIdx = (colorIdx + 1) % colors.length;
+      color = colors[colorIdx];
+    }
+
+    if(hitCorner){ cornerFlash = 40; }
+    if(cornerFlash > 0) cornerFlash--;
+
+    drawDVD(x, y, color);
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', ()=>{ resize(); });
+  init();
+  frame();
+})();
+</script>
+
+<script>
+// ── DRAG TO MOVE WIN95 WINDOW ─────────────────────────────────────
+(function(){
+  const win = document.getElementById('wotm-window');
+  const bar = document.getElementById('wotm-titlebar');
+  let dragging = false, ox = 0, oy = 0;
+
+  bar.addEventListener('mousedown', e=>{
+    dragging = true;
+    const r = win.getBoundingClientRect();
+    // switch from transform-based to absolute positioning
+    win.style.transform = 'none';
+    win.style.left = r.left + 'px';
+    win.style.top  = r.top  + 'px';
+    ox = e.clientX - r.left;
+    oy = e.clientY - r.top;
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', e=>{
+    if(!dragging) return;
+    win.style.left = (e.clientX - ox) + 'px';
+    win.style.top  = (e.clientY - oy) + 'px';
+  });
+  window.addEventListener('mouseup', ()=>{ dragging = false; });
+
+  // touch
+  bar.addEventListener('touchstart', e=>{
+    dragging = true;
+    const r = win.getBoundingClientRect();
+    win.style.transform = 'none';
+    win.style.left = r.left + 'px';
+    win.style.top  = r.top  + 'px';
+    ox = e.touches[0].clientX - r.left;
+    oy = e.touches[0].clientY - r.top;
+    e.preventDefault();
+  },{passive:false});
+  window.addEventListener('touchmove', e=>{
+    if(!dragging) return;
+    win.style.left = (e.touches[0].clientX - ox) + 'px';
+    win.style.top  = (e.touches[0].clientY - oy) + 'px';
+  },{passive:false});
+  window.addEventListener('touchend', ()=>{ dragging = false; });
+})();
+</script>
 
 <!-- LIGHTBOX -->
 <div id="lightbox" onclick="closeLightbox()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:center;justify-content:center;cursor:zoom-out;">
@@ -1027,6 +1443,203 @@
 </div>
 
 </div><!-- end main-content -->
+
+<div id="loading-screen" style="display:none;position:fixed;inset:0;z-index:5000;background:#000;flex-direction:column;align-items:center;justify-content:center;gap:0;overflow:hidden;">
+
+  <!-- TILED BACKGROUND: repeating 90s pattern -->
+  <div id="ls-tile-bg" style="position:absolute;inset:0;opacity:0.18;background-image:
+    repeating-linear-gradient(45deg,#ffff00 0px,#ffff00 2px,transparent 2px,transparent 20px),
+    repeating-linear-gradient(-45deg,#00ffff 0px,#00ffff 2px,transparent 2px,transparent 20px);
+    background-size:28px 28px;
+    animation:tileShift 0.4s steps(2) infinite;"></div>
+
+  <!-- SCANLINES -->
+  <div style="position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,0.35) 3px,rgba(0,0,0,0.35) 4px);z-index:2;"></div>
+
+  <div style="position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:14px;width:min(92vw,380px);">
+
+    <!-- GIF GLOBE -->
+    <div style="position:relative;width:90px;height:90px;margin:0 auto;">
+      <img src="https://files.catbox.moe/6ygxq9.gif" style="width:90px;height:90px;object-fit:contain;display:block;image-rendering:pixelated;" />
+    </div>
+    <style>
+    @keyframes globeSpin {
+      0%   { transform: translateX(0%); }
+      100% { transform: translateX(33.33%); }
+    }
+    </style>
+
+    <!-- MARQUEE TEXT -->
+    <div style="overflow:hidden;width:100%;border-top:3px solid #ffff00;border-bottom:3px solid #ffff00;padding:4px 0;background:#000;">
+      <div style="white-space:nowrap;font-family:'Times New Roman',serif;font-size:8px;color:#ffff00;animation:lsMarquee 3s linear infinite;">
+        ★ PLEASE WAIT ★ LOADING PAGE ★ DO NOT CLICK BACK ★ PLEASE WAIT ★ LOADING PAGE ★ DO NOT CLICK BACK ★&nbsp;
+      </div>
+    </div>
+
+    <!-- MAIN TITLE -->
+    <div style="font-family:'Times New Roman',serif;font-size:clamp(10px,3.5vw,15px);color:#ffff00;text-align:center;line-height:2;text-shadow:2px 2px 0 #ff6600,0 0 20px #ffff00;animation:lsFlicker 0.12s steps(1) infinite;">
+      LOADING...<br>
+      <span style="font-size:0.6em;color:#00ffff;">PLEASE STAND BY</span>
+    </div>
+
+    <!-- WIN95 PROGRESS WINDOW -->
+    <div style="width:100%;background:#c0c0c0;border-top:2px solid #fff;border-left:2px solid #fff;border-right:2px solid #555;border-bottom:2px solid #555;box-shadow:2px 2px 0 #000;">
+      <div style="background:linear-gradient(90deg,#000080,#1084d0);padding:3px 6px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-family:'Times New Roman',serif;font-size:6px;color:#fff;">📂 Loading page...</span>
+        <span id="ls-pct-title" style="font-family:'Times New Roman',serif;font-size:6px;color:#ffff00;">0%</span>
+      </div>
+      <div style="padding:10px 10px 12px;display:flex;flex-direction:column;gap:6px;">
+        <div style="font-family:'Times New Roman',serif;font-size:5px;color:#000;" id="ls-status-text">Initializing...</div>
+        <div style="height:18px;background:#fff;border-top:2px solid #555;border-left:2px solid #555;border-right:2px solid #fff;border-bottom:2px solid #fff;overflow:hidden;">
+          <div id="ls-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#000080 0%,#1084d0 50%,#000080 100%);background-size:200% 100%;animation:lsBarShimmer 0.5s linear infinite;transition:width 0.12s steps(3);"></div>
+        </div>
+        <div style="font-family:'Times New Roman',serif;font-size:5px;color:#808080;text-align:right;" id="ls-kb-text">0 KB / 640 KB</div>
+      </div>
+    </div>
+
+    <!-- 90s BADGES ROW -->
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;margin-top:2px;">
+      <div style="font-family:'Times New Roman',serif;font-size:5px;background:#ff0000;color:#ffff00;padding:3px 5px;border:2px solid #ffff00;animation:badgePulse 0.6s steps(1) infinite;">⚡ BEST IN NETSCAPE</div>
+      <div style="font-family:'Times New Roman',serif;font-size:5px;background:#000080;color:#fff;padding:3px 5px;border:2px solid #fff;">800x600 OPTIMIZED</div>
+      <div style="font-family:'Times New Roman',serif;font-size:5px;background:#008000;color:#ffff00;padding:3px 5px;border:2px solid #ffff00;animation:badgePulse 0.8s steps(1) infinite 0.3s;">✨ GEOCITIES CERTIFIED</div>
+    </div>
+
+    <!-- HIT COUNTER style -->
+    <div style="font-family:'Times New Roman',serif;font-size:6px;color:#00ff41;background:#000;border:2px solid #00ff41;padding:4px 10px;letter-spacing:3px;">
+      VISITORS: <span id="ls-visitors">031337</span>
+    </div>
+
+  </div>
+</div>
+
+<style>
+@keyframes tileShift {
+  0%{background-position:0 0;}
+  50%{background-position:14px 14px;}
+  100%{background-position:0 0;}
+}
+@keyframes lsMarquee {
+  0%{transform:translateX(100%);}
+  100%{transform:translateX(-100%);}
+}
+@keyframes lsFlicker {
+  0%,100%{opacity:1;}
+  50%{opacity:0.7;}
+}
+@keyframes lsIconBounce {
+  0%{transform:translateY(0) scale(1);}
+  50%{transform:translateY(-6px) scale(1.1);}
+  100%{transform:translateY(0) scale(1);}
+}
+@keyframes lsBarShimmer {
+  0%{background-position:200% 0;}
+  100%{background-position:0% 0;}
+}
+@keyframes badgePulse {
+  0%,100%{opacity:1;}
+  50%{opacity:0;}
+}
+@keyframes blinkAnim {
+  0%,100%{opacity:1;}
+  50%{opacity:0;}
+}
+</style>
+
+<script>
+// GIF INSPECT
+function inspectGif(el, name, type, size, extra) {
+  document.getElementById('gif-inspect-preview').src = el.src;
+  document.getElementById('gif-inspect-name').textContent = name;
+  document.getElementById('gif-inspect-type').textContent = type + ' (' + extra + ')';
+  document.getElementById('gif-inspect-size').textContent = size + ' px';
+  document.getElementById('gif-inspect-src').textContent = el.src;
+  document.getElementById('gif-inspect-dialog').style.display = 'block';
+}
+
+const loadingMessages = [
+  'Connecting to server...',
+  'Downloading HTML...',
+  'Parsing stylesheets...',
+  'Loading GIF images...',
+  'Checking cookies...',
+  'Verifying Java applet...',
+  'Almost there...',
+  'Done! Rendering page...',
+];
+
+function activateTab(tab) {
+  const noahPage = document.getElementById('page-noah');
+  const wotmPage = document.getElementById('page-wotm');
+  const tabNoah  = document.getElementById('tab-noah');
+  const tabWotm  = document.getElementById('tab-wotm');
+  const raised = ';border-top:2px solid var(--win-light);border-left:2px solid var(--win-light);border-right:2px solid var(--win-dark);border-bottom:2px solid var(--win-dark);';
+  const sunken = ';border-top:2px solid var(--win-dark);border-left:2px solid var(--win-dark);border-right:2px solid var(--win-light);border-bottom:2px solid var(--win-light);';
+  if (tab === 'noah') {
+    noahPage.style.display = 'block';
+    wotmPage.style.display = 'none';
+    tabNoah.style.cssText += sunken;
+    tabWotm.style.cssText += raised;
+  } else {
+    noahPage.style.display = 'none';
+    wotmPage.style.display = 'block';
+    tabWotm.style.cssText += sunken;
+    tabNoah.style.cssText += raised;
+  }
+}
+
+function switchTab(tab) {
+  const ls = document.getElementById('loading-screen');
+  const bar = document.getElementById('ls-bar');
+  const pct = document.getElementById('ls-pct-title');
+  const status = document.getElementById('ls-status-text');
+  const kb = document.getElementById('ls-kb-text');
+
+  // Show loading overlay
+  ls.style.display = 'flex';
+  bar.style.width = '0%';
+
+  let step = 0;
+  const totalSteps = loadingMessages.length;
+  const totalKB = 640;
+
+  function tick() {
+    if (step >= totalSteps) {
+      // Done — hide loader and switch page
+      bar.style.width = '100%';
+      pct.textContent = '100%';
+      status.textContent = 'Complete!';
+      kb.textContent = totalKB + ' KB / ' + totalKB + ' KB';
+      setTimeout(() => {
+        ls.style.display = 'none';
+        bar.style.width = '0%';
+        activateTab(tab);
+      }, 300);
+      return;
+    }
+    const progress = Math.round(((step + 1) / totalSteps) * 100);
+    const kbDone = Math.round((progress / 100) * totalKB);
+    bar.style.width = progress + '%';
+    pct.textContent = progress + '%';
+    status.textContent = loadingMessages[step];
+    kb.textContent = kbDone + ' KB / ' + totalKB + ' KB';
+    step++;
+    // random-ish delay per step (80–240ms) for authentic dial-up feel
+    setTimeout(tick, 80 + Math.random() * 160);
+  }
+
+  tick();
+}
+
+// Check if form URL is real
+window.addEventListener('DOMContentLoaded', function() {
+  const iframe = document.getElementById('wotm-form-iframe');
+  if (iframe && iframe.src.includes('PASTE_YOUR_FORM_ID_HERE')) {
+    iframe.style.display = 'none';
+  }
+  activateTab('noah');
+});
+</script>
+
 
 <script>
 // BOOT SCREEN
@@ -1371,7 +1984,63 @@ const items = document.querySelectorAll('.playlist-item');
 const eqBars = document.getElementById('eq-bars');
 const audio = document.getElementById('audio-player');
 
-audio.addEventListener('ended', () => { isPlaying = false; updateDisplay(); });
+// CLICK SOUND
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playClick() {
+  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 4);
+  }
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+  src.connect(gain);
+  gain.connect(audioCtx.destination);
+  src.start();
+}
+
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('button, .win-ctrl, .ctrl-btn, .taskbar-task, .start-btn, .playlist-item, .desktop-icon, .icon-item, a');
+  if (el) playClick();
+}, true);
+
+// VOLUME CONTROL
+let currentVol = 0.7;
+audio.volume = currentVol;
+
+function setVolume(e) {
+  const track = document.getElementById('vol-track');
+  const rect = track.getBoundingClientRect();
+  let pct = (e.clientX - rect.left) / rect.width;
+  pct = Math.max(0, Math.min(1, pct));
+  applyVolume(pct);
+}
+
+function applyVolume(pct) {
+  currentVol = pct;
+  audio.volume = pct;
+  const fill = document.getElementById('vol-fill');
+  const thumb = document.getElementById('vol-thumb');
+  const label = document.getElementById('vol-pct');
+  fill.style.width = (pct * 100) + '%';
+  thumb.style.right = 'calc(' + ((1 - pct) * 100) + '% - 4px)';
+  label.textContent = Math.round(pct * 100) + '%';
+}
+
+// drag support
+const volTrack = document.getElementById('vol-track');
+let draggingVol = false;
+volTrack.addEventListener('mousedown', (e) => { draggingVol = true; setVolume(e); });
+document.addEventListener('mousemove', (e) => { if (draggingVol) setVolume(e); });
+document.addEventListener('mouseup', () => { draggingVol = false; });
+volTrack.addEventListener('touchstart', (e) => { draggingVol = true; setVolume(e.touches[0]); }, {passive:true});
+document.addEventListener('touchmove', (e) => { if (draggingVol) setVolume(e.touches[0]); }, {passive:true});
+document.addEventListener('touchend', () => { draggingVol = false; });
+
 
 audio.addEventListener('timeupdate', () => {
   if (!audio.duration) return;
