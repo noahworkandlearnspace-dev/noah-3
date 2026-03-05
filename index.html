@@ -69,6 +69,26 @@
     background: #d4d0c8;
   }
 
+  @keyframes blinkAnim {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  @keyframes lsMarquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @keyframes lsFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  @keyframes tileShift {
+    0% { background-position: 0 0; }
+    100% { background-position: 28px 28px; }
+  }
+
   /* BOOT SCREEN */
   #boot-screen {
     position: fixed;
@@ -176,12 +196,7 @@
     cursor: default;
   }
 
-  #doom-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-  }
+
 
 
   /* GRAIN OVERLAY */
@@ -203,30 +218,6 @@
     60%  { background-position: -10px 25px; }
     80%  { background-position: 15px -5px; }
     100% { background-position: 0 0; }
-  }
-
-  /* STAR BACKGROUND */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-      radial-gradient(1px 1px at 10% 15%, #fff 0%, transparent 100%),
-      radial-gradient(1px 1px at 25% 40%, #fff 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 40% 8%, #fff 0%, transparent 100%),
-      radial-gradient(1px 1px at 55% 60%, #fff 0%, transparent 100%),
-      radial-gradient(1px 1px at 70% 25%, #fff 0%, transparent 100%),
-      radial-gradient(2px 2px at 80% 70%, #fff 0%, transparent 100%),
-      radial-gradient(1px 1px at 90% 35%, #fff 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 15% 80%, #fff 0%, transparent 100%),
-      radial-gradient(1px 1px at 35% 90%, #fff 0%, transparent 100%),
-      radial-gradient(1px 1px at 60% 85%, #fff 0%, transparent 100%),
-      radial-gradient(2px 2px at 5% 50%, #aaf 0%, transparent 100%),
-      radial-gradient(1px 1px at 45% 55%, #faf 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 75% 45%, #aff 0%, transparent 100%),
-      var(--bg-blue);
   }
 
   /* TASKBAR */
@@ -408,6 +399,7 @@
     0% { transform: translateX(100%); }
     100% { transform: translateX(-100%); }
   }
+  .main-title {
     font-family: 'Press Start 2P', monospace;
     font-size: clamp(14px, 5vw, 22px);
     color: #000;
@@ -760,9 +752,67 @@
 <div class="scanlines"></div>
 
 <!-- STAR BACKGROUND CANVAS -->
-<canvas id="starfield" style="position:fixed;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none;"></canvas>
+<canvas id="starfield" style="position:fixed;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none;transition:opacity 0.3s;"></canvas>
+<script>
+// STARFIELD — page 1 only
+(function(){
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [];
+  const N = 180;
 
-<canvas id="doom-bg"></canvas>
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function init(){
+    resize();
+    stars = [];
+    for(let i=0;i<N;i++){
+      stars.push({
+        x: Math.random()*W,
+        y: Math.random()*H,
+        r: Math.random()*1.5+0.2,
+        speed: Math.random()*0.3+0.05,
+        opacity: Math.random()*0.8+0.2,
+        twinkle: Math.random()*Math.PI*2
+      });
+    }
+  }
+
+  function draw(){
+    const page1 = document.getElementById('page-noah');
+    if(!page1 || page1.style.display === 'none'){
+      canvas.style.opacity = '0';
+      requestAnimationFrame(draw);
+      return;
+    }
+    canvas.style.opacity = '1';
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0,0,W,H);
+
+    stars.forEach(s=>{
+      s.twinkle += 0.03;
+      const op = s.opacity * (0.6 + 0.4*Math.sin(s.twinkle));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,255,255,${op})`;
+      ctx.fill();
+      s.y += s.speed;
+      if(s.y > H){ s.y = 0; s.x = Math.random()*W; }
+    });
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', init);
+  init();
+  draw();
+})();
+</script>
+
+
 
 <!-- BOOT SCREEN -->
 <div id="boot-screen" style="position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:pointer;" onclick="startBoot()">
@@ -829,8 +879,8 @@
 <div class="desktop" id="desktop-col">
 
   <!-- TITLE WINDOW -->
-  <div class="title-window">
-    <div class="window-titlebar">
+  <div class="title-window" id="noah-window" style="position:relative;">
+    <div class="window-titlebar" id="noah-titlebar" style="cursor:grab;">
       <span class="window-title-text">🎵 NOAH SANCTUARY.exe</span>
       <div class="window-controls">
         <div class="win-ctrl">_</div>
@@ -1108,16 +1158,11 @@
 <!-- PAGE: WORD OF THE MONTH -->
 <div id="page-wotm" style="display:none;position:relative;min-height:calc(100vh - 32px);overflow:hidden;">
 
-  <!-- DVD SCREENSAVER CANVAS -->
-  <canvas id="dvd-canvas" style="position:fixed;top:32px;left:0;width:100%;height:calc(100vh - 32px);z-index:0;background:#000;"></canvas>
 
-  <!-- FLOATING WIN95 WINDOW (draggable) -->
+  <!-- STATIC WIN95 WINDOW -->
   <div id="wotm-window" style="
-    position:fixed;
-    top:80px;
-    left:50%;
-    transform:translateX(-50%);
-    width:min(92vw,420px);
+    position:relative;
+    width:100%;
     z-index:10;
     background:var(--win-gray);
     border-top:2px solid var(--win-light);
@@ -1128,12 +1173,12 @@
     cursor:default;
     user-select:none;
   ">
-    <!-- TITLEBAR (drag handle) -->
+    <!-- TITLEBAR -->
     <div id="wotm-titlebar" style="
       background:linear-gradient(90deg,#000080,#1084d0);
       padding:3px 5px;
       display:flex;align-items:center;justify-content:space-between;
-      cursor:move;
+      cursor:default;
     ">
       <span style="font-family:'Press Start 2P',monospace;font-size:7px;color:#fff;letter-spacing:1px;">📀 QUOTES_OF_THIS_MONTH.exe</span>
       <div style="display:flex;gap:2px;">
@@ -1148,7 +1193,7 @@
 
       <div style="padding:12px 10px 14px;">
       <div style="overflow:hidden;width:100%;margin-bottom:8px;">
-        <div class="marquee-title">★ QUOTES OF THIS MONTH ★ QUOTES OF THIS MONTH ★ QUOTES OF THIS MONTH ★&nbsp;</div>
+        <div class="marquee-title" style="font-family:'Times New Roman',serif;">★ QUOTES OF THIS MONTH ★ QUOTES OF THIS MONTH ★ QUOTES OF THIS MONTH ★&nbsp;</div>
       </div>
       <div class="sub-title">— TOP QUOTES THIS MONTH —</div>
       <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#808080;margin-top:4px;margin-bottom:12px;">EVERY MONTH · NEW QUOTE · NEW VIBES</div>
@@ -1243,178 +1288,55 @@
 
 </div><!-- end page-wotm -->
 
-<style>
-/* DVD canvas always behind when wotm page active */
-#page-wotm { background: #000; }
-@keyframes spinFull {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-</style>
 
-<script>
-// ── DVD SCREENSAVER ──────────────────────────────────────────────
-(function(){
-  const canvas = document.getElementById('dvd-canvas');
-  const ctx = canvas.getContext('2d');
 
-  let W, H;
-  function resize(){
-    W = canvas.width  = canvas.offsetWidth;
-    H = canvas.height = canvas.offsetHeight;
-  }
 
-  // DVD logo lines (simple pixel art in canvas)
-  const DVD_W = 90, DVD_H = 50;
-  let x, y, vx, vy;
-  const colors = ['#ff2d55','#ff9f0a','#ffd60a','#34c759','#30b0c7','#007aff','#bf5af2','#ff375f','#00e5ff'];
-  let colorIdx = 0;
-  let color = colors[0];
-  let cornerHit = false;
-  let cornerFlash = 0;
-
-  function init(){
-    resize();
-    x = Math.random() * (W - DVD_W);
-    y = Math.random() * (H - DVD_H);
-    vx = 1.5;
-    vy = 1.2;
-  }
-
-  function drawDVD(cx, cy, col){
-    ctx.save();
-    ctx.translate(cx, cy);
-
-    // glow
-    ctx.shadowColor = col;
-    ctx.shadowBlur = 18;
-
-    // DVD disc shape (ellipse)
-    ctx.beginPath();
-    ctx.ellipse(DVD_W/2, DVD_H/2 - 4, DVD_W/2 - 6, DVD_H/2 - 8, 0, 0, Math.PI*2);
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    // hole
-    ctx.beginPath();
-    ctx.arc(DVD_W/2, DVD_H/2 - 4, 6, 0, Math.PI*2);
-    ctx.fillStyle = '#000';
-    ctx.fill();
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // shine
-    ctx.beginPath();
-    ctx.ellipse(DVD_W/2 - 10, DVD_H/2 - 12, 12, 5, -0.4, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(255,255,255,0.18)';
-    ctx.fill();
-
-    // "DVD" text
-    ctx.shadowBlur = 6;
-    ctx.font = "bold 13px 'Press Start 2P', monospace";
-    ctx.fillStyle = col;
-    ctx.textAlign = 'center';
-    ctx.fillText('DVD', DVD_W/2, DVD_H - 4);
-
-    // corner hit flash
-    if(cornerFlash > 0){
-      ctx.font = "6px 'Press Start 2P', monospace";
-      ctx.fillStyle = '#fff';
-      ctx.fillText('CORNER!', DVD_W/2, -6);
-    }
-
-    ctx.restore();
-  }
-
-  function frame(){
-    if(document.getElementById('page-wotm').style.display === 'none'){
-      requestAnimationFrame(frame); return;
-    }
-
-    ctx.fillStyle = 'rgba(0,0,0,0.18)';
-    ctx.fillRect(0,0,W,H);
-
-    // move
-    x += vx; y += vy;
-
-    let hitCorner = false;
-    let hitWall = false;
-
-    if(x <= 0){ x = 0; vx = Math.abs(vx); hitWall = true; }
-    if(x + DVD_W >= W){ x = W - DVD_W; vx = -Math.abs(vx); hitWall = true; }
-    if(y <= 0){ y = 0; vy = Math.abs(vy); hitWall = true; }
-    if(y + DVD_H >= H){ y = H - DVD_H; vy = -Math.abs(vy); hitWall = true; }
-
-    if(hitWall){
-      // check corner (within 2px of two walls at once)
-      const atLeft   = x <= 2;
-      const atRight  = x + DVD_W >= W - 2;
-      const atTop    = y <= 2;
-      const atBottom = y + DVD_H >= H - 2;
-      if((atLeft||atRight) && (atTop||atBottom)) hitCorner = true;
-
-      // change color
-      colorIdx = (colorIdx + 1) % colors.length;
-      color = colors[colorIdx];
-    }
-
-    if(hitCorner){ cornerFlash = 40; }
-    if(cornerFlash > 0) cornerFlash--;
-
-    drawDVD(x, y, color);
-    requestAnimationFrame(frame);
-  }
-
-  window.addEventListener('resize', ()=>{ resize(); });
-  init();
-  frame();
-})();
-</script>
 
 <script>
 // ── DRAG TO MOVE WIN95 WINDOW ─────────────────────────────────────
 (function(){
-  const win = document.getElementById('wotm-window');
-  const bar = document.getElementById('wotm-titlebar');
-  let dragging = false, ox = 0, oy = 0;
-
-  bar.addEventListener('mousedown', e=>{
-    dragging = true;
-    const r = win.getBoundingClientRect();
-    // switch from transform-based to absolute positioning
-    win.style.transform = 'none';
-    win.style.left = r.left + 'px';
-    win.style.top  = r.top  + 'px';
-    ox = e.clientX - r.left;
-    oy = e.clientY - r.top;
+  // DRAG — NOAH WINDOW
+  const noahWin = document.getElementById('noah-window');
+  const noahBar = document.getElementById('noah-titlebar');
+  let noahDragging = false, nox = 0, noy = 0;
+  noahBar.addEventListener('mousedown', e=>{
+    noahDragging = true;
+    noahWin.style.position = 'fixed';
+    noahWin.style.zIndex = 1000;
+    noahWin.style.width = noahWin.offsetWidth + 'px';
+    const r = noahWin.getBoundingClientRect();
+    noahWin.style.left = r.left + 'px';
+    noahWin.style.top = r.top + 'px';
+    nox = e.clientX - r.left;
+    noy = e.clientY - r.top;
+    noahBar.style.cursor = 'grabbing';
     e.preventDefault();
   });
   window.addEventListener('mousemove', e=>{
-    if(!dragging) return;
-    win.style.left = (e.clientX - ox) + 'px';
-    win.style.top  = (e.clientY - oy) + 'px';
+    if(!noahDragging) return;
+    noahWin.style.left = (e.clientX - nox) + 'px';
+    noahWin.style.top = (e.clientY - noy) + 'px';
   });
-  window.addEventListener('mouseup', ()=>{ dragging = false; });
-
-  // touch
-  bar.addEventListener('touchstart', e=>{
-    dragging = true;
-    const r = win.getBoundingClientRect();
-    win.style.transform = 'none';
-    win.style.left = r.left + 'px';
-    win.style.top  = r.top  + 'px';
-    ox = e.touches[0].clientX - r.left;
-    oy = e.touches[0].clientY - r.top;
+  window.addEventListener('mouseup', ()=>{ noahDragging = false; noahBar.style.cursor = 'grab'; });
+  noahBar.addEventListener('touchstart', e=>{
+    noahDragging = true;
+    noahWin.style.position = 'fixed';
+    noahWin.style.zIndex = 1000;
+    noahWin.style.width = noahWin.offsetWidth + 'px';
+    const r = noahWin.getBoundingClientRect();
+    noahWin.style.left = r.left + 'px';
+    noahWin.style.top = r.top + 'px';
+    nox = e.touches[0].clientX - r.left;
+    noy = e.touches[0].clientY - r.top;
     e.preventDefault();
   },{passive:false});
   window.addEventListener('touchmove', e=>{
-    if(!dragging) return;
-    win.style.left = (e.touches[0].clientX - ox) + 'px';
-    win.style.top  = (e.touches[0].clientY - oy) + 'px';
+    if(!noahDragging) return;
+    noahWin.style.left = (e.touches[0].clientX - nox) + 'px';
+    noahWin.style.top = (e.touches[0].clientY - noy) + 'px';
   },{passive:false});
-  window.addEventListener('touchend', ()=>{ dragging = false; });
+  window.addEventListener('touchend', ()=>{ noahDragging = false; });
+
 })();
 </script>
 
@@ -1688,138 +1610,6 @@ function closeLightbox() {
 
 
 <script>
-// DOOM BACKGROUND
-(function() {
-  const canvas = document.getElementById('doom-bg');
-  const ctx = canvas.getContext('2d');
-
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  resize();
-  window.addEventListener('resize', resize);
-
-  // Simple maze map
-  const map = [
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,1,1,0,1,1,1,0,1,1,0,1,1,0,1],
-    [1,0,1,0,0,0,0,1,0,0,0,0,0,1,0,1],
-    [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
-    [1,0,1,0,0,0,1,1,1,0,0,0,1,0,0,1],
-    [1,0,1,1,0,1,0,0,0,1,0,1,1,1,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,1,0,1,1,0,1,1,0,1,1,0,1,0,1],
-    [1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
-    [1,0,1,1,1,0,0,0,0,0,1,1,1,0,0,1],
-    [1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,1],
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-  ];
-
-  const MW = map[0].length;
-  const MH = map.length;
-
-  let px = 2, py = 2, pa = 0;
-
-  // Wall colors DOOM style
-  const wallColors = ['#8b0000','#a00000','#cc0000','#8b0000','#6b0000'];
-
-  function drawDoom() {
-    const W = canvas.width;
-    const H = canvas.height;
-    const halfH = H / 2;
-    const FOV = Math.PI / 3;
-    const RAYS = Math.floor(W / 2);
-
-    // Ceiling - dark gray/black
-    ctx.fillStyle = '#111';
-    ctx.fillRect(0, 0, W, halfH);
-
-    // Floor - dark red/brown
-    const floorGrad = ctx.createLinearGradient(0, halfH, 0, H);
-    floorGrad.addColorStop(0, '#1a0000');
-    floorGrad.addColorStop(1, '#330000');
-    ctx.fillStyle = floorGrad;
-    ctx.fillRect(0, halfH, W, halfH);
-
-    // Raycasting
-    for (let r = 0; r < RAYS; r++) {
-      const rayAngle = pa - FOV/2 + (FOV * r / RAYS);
-      const cosA = Math.cos(rayAngle);
-      const sinA = Math.sin(rayAngle);
-
-      let dist = 0;
-      let hit = false;
-      let wx, wy;
-
-      for (let d = 0; d < 20; d += 0.05) {
-        wx = px + cosA * d;
-        wy = py + sinA * d;
-        const mx = Math.floor(wx);
-        const my = Math.floor(wy);
-        if (mx < 0 || mx >= MW || my < 0 || my >= MH) { hit = true; dist = d; break; }
-        if (map[my] && map[my][mx] === 1) { hit = true; dist = d; break; }
-      }
-
-      if (!hit) dist = 20;
-
-      // Fix fisheye
-      dist *= Math.cos(rayAngle - pa);
-      if (dist < 0.1) dist = 0.1;
-
-      const wallH = Math.min(H, (H / dist) * 1.2);
-      const top = halfH - wallH / 2;
-
-      // Color based on distance
-      const brightness = Math.max(0, Math.min(255, 255 - dist * 20));
-      const r_c = Math.floor(brightness * 0.6);
-      const g_c = 0;
-      const b_c = 0;
-
-      ctx.fillStyle = `rgb(${r_c},${g_c},${b_c})`;
-      ctx.fillRect(r * 2, top, 2, wallH);
-    }
-
-    // HUD - DOOM style health bar at bottom
-    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.fillRect(0, H - 36, W, 36);
-    ctx.fillStyle = '#cc0000';
-    ctx.font = "bold 14px 'Press Start 2P', monospace";
-    ctx.fillText('💀 100%', 10, H - 14);
-    ctx.fillStyle = '#888';
-    ctx.font = "8px 'Press Start 2P', monospace";
-    ctx.fillText('SHOTGUN  AMMO: 50', W/2 - 70, H - 14);
-  }
-
-  // Auto-walk through maze
-  let moveT = 0;
-  function update() {
-    moveT += 0.01;
-    pa += 0.008; // slow rotate
-
-    // Move forward
-    const speed = 0.02;
-    const nx = px + Math.cos(pa) * speed;
-    const ny = py + Math.sin(pa) * speed;
-
-    const mx = Math.floor(nx);
-    const my = Math.floor(ny);
-
-    if (map[Math.floor(py)][mx] === 0) px = nx;
-    if (map[my][Math.floor(px)] === 0) py = ny;
-
-    // Bounce off walls
-    if (map[Math.floor(py)][Math.floor(px + Math.cos(pa)*0.3)] === 1 ||
-        map[Math.floor(py + Math.sin(pa)*0.3)][Math.floor(px)] === 1) {
-      pa += Math.PI * 0.7;
-    }
-
-    drawDoom();
-    requestAnimationFrame(update);
-  }
-
-  update();
-})();
-
-
 // 3D BOX
 (function(){
   const canvas = document.getElementById('box3d');
@@ -1949,20 +1739,18 @@ function closeLightbox() {
 })();
 
 function updateClock() {
+  const el = document.getElementById('clock');
+  const icon = document.getElementById('day-icon');
+  if (!el) return;
   const now = new Date();
   const h = now.getHours();
-  const hStr = String(h).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  document.getElementById('clock').textContent = hStr + ':' + m;
-  // 6:00 - 18:00 = siang (matahari), selainnya malam (bulan)
-  if (h >= 6 && h < 18) {
-    document.getElementById('day-icon').textContent = '☀️';
-  } else {
-    document.getElementById('day-icon').textContent = '🌙';
-  }
+  el.textContent = String(h).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  if (icon) icon.textContent = (h >= 6 && h < 18) ? '☀️' : '🌙';
 }
-updateClock();
-setInterval(updateClock, 1000);
+document.addEventListener('DOMContentLoaded', () => {
+  updateClock();
+  setInterval(updateClock, 1000);
+});
 
 // PLAYER
 let currentTrack = 0;
