@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>NOAH SANCTUARY — Official</title>
+<title>NOAH SANCTUARY — Official | v3.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Dirt&family=Rubik+Glitch&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -771,10 +771,11 @@
     html, body { overflow-x: hidden; }
     .desktop { padding: 8px 6px 16px; }
     .taskbar { height: 28px; padding: 2px 4px; gap: 3px; }
-    .taskbar-left { gap: 3px; flex: 1; min-width: 0; overflow: hidden; }
+    .taskbar-left { gap: 3px; flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; display: flex; align-items: center; }
+    .taskbar-left::-webkit-scrollbar { display: none; }
     .start-btn { font-size: 5px; padding: 2px 5px; flex-shrink: 0; }
     .start-btn .win-logo { width: 11px; height: 11px; }
-    .taskbar-task { font-size: 5px; padding: 1px 5px; max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .taskbar-task { font-size: 5px; padding: 4px 7px; max-width: none; white-space: nowrap; flex-shrink: 0; min-height: 22px; display: flex; align-items: center; }
     #clock { font-size: 6px; min-width: 38px; }
     .system-tray { padding: 1px 4px; gap: 3px; }
     #day-icon { font-size: 12px; }
@@ -808,7 +809,7 @@
     .boot-bar-wrap { width: 180px; }
   }
   @media (max-width: 375px) {
-    .taskbar-task { max-width: 60px; font-size: 4.5px; }
+    .taskbar-task { font-size: 4.5px; padding: 4px 6px; }
     .start-btn { font-size: 4.5px; }
     .icon-grid { gap: 5px; }
     .pixel-icon { width: 38px; height: 38px; }
@@ -1000,7 +1001,7 @@
       </div>
       <div class="sub-title">— OFFICIAL —</div>
       <div style="font-family:'Press Start 2P',monospace;font-size:6px;color:#808080;margin-top:4px;">
-        EST. 1998 · Ver. 6.0
+        EST. 1998 · Ver. 3.0
       </div>
       <div style="margin:12px auto 4px;display:flex;flex-direction:row;align-items:flex-start;justify-content:center;gap:8px;flex-wrap:nowrap;overflow-x:auto;">
         <!-- PHOTO 1 -->
@@ -1226,7 +1227,7 @@
       <img src="https://files.catbox.moe/6j4tx9.gif" style="width:48px;height:48px;image-rendering:pixelated;border-top:2px solid #555;border-left:2px solid #555;border-right:2px solid #fff;border-bottom:2px solid #fff;flex-shrink:0;cursor:pointer;" onclick="inspectGif(this,'6j4tx9.gif','GIF Image','48x48','Animated')" />
     </div>
     <div style="font-family:'Press Start 2P',monospace;font-size:5px;color:#808080;margin-top:8px;">
-      noahsanctuary.com v1.0 · IE 6.0 Recommended
+      noahsanctuary.com v3.0 · IE 6.0 Recommended
     </div>
   </div>
 
